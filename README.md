@@ -105,13 +105,16 @@ the payment calendar (the Home screen already lists upcoming payments) and the h
 - Usage access permission screen
 - Usage tracking and daily sync
 - Cost-per-hour logic and value score
-- Detail and Insights screens
+- Insights screen with chart
 - Review note in payment alerts
+- External DB integration (if adopted in #8)
 
 **이찬행: subscription & payment management**
 - Figma design, app theme and navigation
 - Add, edit, presets and analysis method
-- Home screen
+- Home screen and Subscription Detail screen
 - Payment alerts (free trials included)
 
 **Together (week 1):** data model, Room database, screen skeleton and notification helper.
+
+> Roles were rebalanced after the scope cut. Proposal under discussion: [#19](https://github.com/ohkyounghun/Worthour/issues/19).
