@@ -79,7 +79,7 @@ Example: a ₩17,000 monthly plan used for 2 hours last cycle → **₩8,500 per
 | Calendar view library | Payment calendar screen | 3rd-party library |
 
 > **External database: under review.** The proposal keeps all data on the device (Room).
-> Based on feedback, connecting an external database is being considered. See the related issue.
+> Based on feedback, connecting an external database is being considered. See [#8](https://github.com/ohkyounghun/Worthour/issues/8).
 
 ## Schedule
 
