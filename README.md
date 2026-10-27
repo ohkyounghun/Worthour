@@ -26,6 +26,7 @@ cost per hour = monthly fee ÷ hours used in the last billing cycle
 
 Usage time comes from Android's app usage data (`UsageStatsManager`).
 A score is shown only after one full billing cycle has been measured.
+(How to handle the first cycle and yearly plans is under review: [#18](https://github.com/ohkyounghun/Worthour/issues/18).)
 
 | Score | Cost per hour |
 |-------|---------------|
@@ -44,15 +45,16 @@ Example: a ₩17,000 monthly plan used for 2 hours last cycle → **₩8,500 per
 
 ## Features
 
-| Priority | Feature | Description |
-|----------|---------|-------------|
-| Core | Add subscription | Presets or manual add, linked to one or more apps |
-| Core | Usage tracking | Daily app usage time per service |
-| Core | Value analysis | Cost per hour after each billing cycle, with a Good / OK / Low score |
-| Core | Payment alerts | Before each payment and before a free trial ends |
-| Key idea | Review before renewal | Flags services you rarely use |
-| Extra | Payment calendar | When money leaves, at a glance |
-| Extra | Home widget | Monthly total and next payment on the home screen |
+| Feature | Description |
+|---------|-------------|
+| Add subscription | Presets or manual add, linked to one or more apps |
+| Usage tracking | Daily app usage time per service |
+| Value analysis | Cost per hour after each billing cycle, with a Good / OK / Low score |
+| Payment alerts | Before each payment. A free trial's end date counts as the first payment |
+| Review before renewal | Low-score services get a "review before you pay" note in the payment alert |
+
+**Cut from the proposal** to keep the scope right for a two-person team:
+the payment calendar (the Home screen already lists upcoming payments) and the home screen widget.
 
 ## Screens
 
@@ -61,10 +63,9 @@ Example: a ₩17,000 monthly plan used for 2 hours last cycle → **₩8,500 per
 | 01 | Home | Monthly total, value badge (Measuring / Good / OK / Low), upcoming payments with D-day |
 | 02 | Add Subscription | Presets, billing info, analysis method (Time Tracking / Non-Time Tracking), linked apps |
 | 03 | Usage Permission | Why usage access is needed, one-tap jump to Android settings, privacy note |
-| 04 | Subscription Detail | Cost per hour, daily usage, edit or delete |
-| 05 | Insights | Cost-per-hour chart, review-before-renewal hint, least-used list |
-| 06 | Payment Calendar | Monthly view, daily detail, upcoming payments |
-| 07 | Alerts & Widget | Payment alert, free-trial alert, home widget |
+| 04 | Subscription Detail | Cost per hour, daily usage list, edit or delete |
+| 05 | Insights | One cost-per-hour bar chart, sorted so the least-worth services come first |
+| 06 | Alerts | Payment alert (free trials included) with a review note for low-score services |
 
 ## Tech stack
 
@@ -72,11 +73,9 @@ Example: a ₩17,000 monthly plan used for 2 hours last cycle → **₩8,500 per
 |-----------|----------|----------|
 | UsageStatsManager | App usage time per service | Device feature |
 | WorkManager | Daily usage sync, payment reminders | Android component |
-| Notification | Payment, free-trial and review alerts | Android component |
-| App Widget | Monthly total on the home screen | Widget |
+| Notification | Payment alerts with review note | Android component |
 | Room | Local database for subscriptions and usage | Jetpack library |
-| MPAndroidChart | Cost-per-hour and usage charts | 3rd-party library |
-| Calendar view library | Payment calendar screen | 3rd-party library |
+| MPAndroidChart | Cost-per-hour chart | 3rd-party library |
 
 > **External database: under review.** The proposal keeps all data on the device (Room).
 > Based on feedback, connecting an external database is being considered. See [#8](https://github.com/ohkyounghun/Worthour/issues/8).
@@ -88,9 +87,9 @@ Example: a ₩17,000 monthly plan used for 2 hours last cycle → **₩8,500 per
 | W8 – W9 | UI design & DB schema |
 | W9 – W10 | Subscription CRUD & presets |
 | W9 – W11 | Usage tracking & daily sync |
-| W11 – W12 | Alerts & payment calendar |
-| W12 – W13 | Value report & charts |
-| W13 – W14 | Widget & polish |
+| W11 – W12 | Payment alerts |
+| W12 – W13 | Value report & chart |
+| W13 – W14 | Polish (+ external DB, if adopted in [#8](https://github.com/ohkyounghun/Worthour/issues/8)) |
 | W14 – W15 | Testing & demo video |
 
 | Milestone | Date |
@@ -106,14 +105,13 @@ Example: a ₩17,000 monthly plan used for 2 hours last cycle → **₩8,500 per
 - Usage access permission screen
 - Usage tracking and daily sync
 - Cost-per-hour logic and value score
-- Detail and Insights screens with charts
-- Review-before-renewal alert
+- Detail and Insights screens
+- Review note in payment alerts
 
 **이찬행: subscription & payment management**
 - Figma design, app theme and navigation
 - Add, edit, presets and analysis method
-- Home screen and payment calendar
-- Payment and free-trial alerts
-- Home screen widget
+- Home screen
+- Payment alerts (free trials included)
 
 **Together (week 1):** data model, Room database, screen skeleton and notification helper.
