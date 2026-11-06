@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Worthour</string>
+    <string name="notification_channel_payment_name">결제 알림</string>
+    <string name="notification_channel_payment_desc">구독 결제 예정일 및 무료체험 종료 알림</string>
+    <string name="notification_channel_general_name">일반 알림</string>
+    <string name="notification_channel_general_desc">앱의 일반적인 알림</string>
 </resources>
