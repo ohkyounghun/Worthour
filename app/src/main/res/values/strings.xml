@@ -4,4 +4,12 @@
     <string name="notification_channel_payment_desc">구독 결제 예정일 및 무료체험 종료 알림</string>
     <string name="notification_channel_general_name">일반 알림</string>
     <string name="notification_channel_general_desc">앱의 일반적인 알림</string>
+
+    <string name="permission_title">사용 정보 접근 권한 안내</string>
+    <string name="permission_reason">Worthour는 앱 사용 시간을 바탕으로 구독의 실제 가치를 분석합니다.\n이 기능을 위해 기기의 \'사용 정보 접근\' 권한이 필요합니다.</string>
+    <string name="permission_privacy_notice">안심하세요!\n수집된 모든 사용량 데이터는 기기 내부에만 저장되며 절대 외부로 전송되지 않습니다.</string>
+    <string name="permission_how_to">버튼을 누른 후 목록에서 \'Worthour\'를 선택하고 권한을 허용해주세요.</string>
+    <string name="permission_button_settings">설정창으로 이동</string>
+    <string name="permission_already_granted">권한이 이미 허용되어 있습니다.</string>
+    <string name="permission_button_continue">계속하기</string>
 </resources>
