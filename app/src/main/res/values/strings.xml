@@ -12,4 +12,8 @@
     <string name="permission_button_settings">설정창으로 이동</string>
     <string name="permission_already_granted">권한이 이미 허용되어 있습니다.</string>
     <string name="permission_button_continue">계속하기</string>
+
+    <string name="home_test_usage_button">오늘 많이 쓴 앱 확인 (테스트)</string>
+    <string name="home_permission_warning">사용 권한이 없거나 사용 내역이 없습니다.</string>
+    <string name="home_top_apps_title">오늘 사용량 상위 앱:</string>
 </resources>
