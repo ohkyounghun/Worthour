@@ -41,6 +41,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -54,6 +55,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.worthour.R
@@ -81,6 +85,19 @@ fun HomeScreen(
     viewModel: HomeViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.refreshToday()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     HomeScreenContent(
         uiState = uiState,
@@ -458,9 +475,14 @@ fun SubscriptionItemCard(
             }
 
             Column(horizontalAlignment = Alignment.End) {
+                val priceResource = if (item.entity.cycle == PaymentCycle.YEARLY) {
+                    R.string.home_per_year
+                } else {
+                    R.string.home_per_month
+                }
                 Text(
                     text = stringResource(
-                        id = R.string.home_per_month,
+                        id = priceResource,
                         String.format(Locale.US, "%,d", item.entity.price)
                     ),
                     style = MaterialTheme.typography.bodyMedium,
@@ -590,13 +612,13 @@ fun EmptySubscriptionCard(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "아직 등록된 구독이 없습니다.",
+                text = stringResource(id = R.string.home_empty_title),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "+ 버튼을 눌러 새 구독을 추가해 보세요!",
+                text = stringResource(id = R.string.home_empty_subtitle),
                 style = MaterialTheme.typography.bodySmall,
                 color = WorthourPrimary,
                 fontWeight = FontWeight.Bold

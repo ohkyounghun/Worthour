@@ -1,24 +1,24 @@
 <resources>
     <string name="app_name">Worthour</string>
-    <string name="notification_channel_payment_name">결제 알림</string>
-    <string name="notification_channel_payment_desc">구독 결제 예정일 및 무료체험 종료 알림</string>
-    <string name="notification_channel_general_name">일반 알림</string>
-    <string name="notification_channel_general_desc">앱의 일반적인 알림</string>
+    <string name="notification_channel_payment_name">Payment Notifications</string>
+    <string name="notification_channel_payment_desc">Reminders for subscription payments and free trial end dates</string>
+    <string name="notification_channel_general_name">General Notifications</string>
+    <string name="notification_channel_general_desc">General app notifications</string>
 
-    <string name="permission_title">사용 정보 접근 권한 안내</string>
-    <string name="permission_reason">Worthour는 앱 사용 시간을 바탕으로 구독의 실제 가치를 분석합니다.\n이 기능을 위해 기기의 \'사용 정보 접근\' 권한이 필요합니다.</string>
-    <string name="permission_privacy_notice">안심하세요!\n수집된 모든 사용량 데이터는 기기 내부에만 저장되며 절대 외부로 전송되지 않습니다.</string>
-    <string name="permission_how_to">버튼을 누른 후 목록에서 \'Worthour\'를 선택하고 권한을 허용해주세요.</string>
-    <string name="permission_button_settings">설정창으로 이동</string>
-    <string name="permission_already_granted">권한이 이미 허용되어 있습니다.</string>
-    <string name="permission_button_continue">계속하기</string>
+    <string name="permission_title">Usage Access Permission Guide</string>
+    <string name="permission_reason">Worthour analyzes the actual value of your subscriptions based on app usage time.\nDevice \'Usage Access\' permission is required for this feature.</string>
+    <string name="permission_privacy_notice">Rest assured!\nAll collected usage data is stored locally on your device and is never sent externally.</string>
+    <string name="permission_how_to">Tap the button, select \'Worthour\' from the list, and grant permission.</string>
+    <string name="permission_button_settings">Go to Settings</string>
+    <string name="permission_already_granted">Permission has already been granted.</string>
+    <string name="permission_button_continue">Continue</string>
 
-    <string name="home_test_usage_button">오늘 많이 쓴 앱 확인 (테스트)</string>
-    <string name="home_permission_warning">사용 권한이 없거나 사용 내역이 없습니다.</string>
-    <string name="home_top_apps_title">오늘 사용량 상위 앱:</string>
+    <string name="home_test_usage_button">Check top used apps today (Test)</string>
+    <string name="home_permission_warning">Usage permission is missing or no usage history found.</string>
+    <string name="home_top_apps_title">Top used apps today:</string>
 
     <!-- Home Screen UI strings -->
-    <string name="home_monthly_spending">Monthly Spending</string>
+    <string name="home_monthly_spending">Monthly Equivalent</string>
     <string name="home_active_subscriptions">%1$d Active Subscriptions</string>
     <string name="home_upcoming_payment">Upcoming payment</string>
     <string name="home_my_subscriptions">My Subscriptions</string>
@@ -26,12 +26,16 @@
     <string name="home_footer_caption">Manually added · Usage from this Android device</string>
     <string name="home_next_bill">Next bill · %1$s</string>
     <string name="home_per_month">₩%1$s/mo</string>
+    <string name="home_per_year">₩%1$s/yr</string>
+    <string name="home_empty_title">No subscriptions added yet.</string>
+    <string name="home_empty_subtitle">Tap the + button to add a new subscription!</string>
 
     <!-- Value Score Badges -->
     <string name="score_good">Good</string>
     <string name="score_ok">OK</string>
     <string name="score_low">Low</string>
     <string name="score_measuring">Measuring</string>
+    <string name="score_not_tracked">Not tracked</string>
 
     <!-- Navigation -->
     <string name="nav_home">Home</string>
@@ -63,13 +67,13 @@
     <string name="btn_add_app">+ Add app</string>
     <string name="btn_save_subscription">Save Subscription</string>
     <string name="btn_update_subscription">Update Subscription</string>
-    <string name="dialog_select_app_title">연결할 앱 선택</string>
-    <string name="search_apps_hint">앱 검색…</string>
-    <string name="btn_close">닫기</string>
-    <string name="btn_cancel">취소</string>
-    <string name="btn_delete">삭제</string>
-    <string name="dialog_delete_title">구독 삭제</string>
-    <string name="dialog_delete_message">이 구독을 정말로 삭제하시겠습니까?</string>
+    <string name="dialog_select_app_title">Select App to Link</string>
+    <string name="search_apps_hint">Search apps…</string>
+    <string name="btn_close">Close</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_delete">Delete</string>
+    <string name="dialog_delete_title">Delete Subscription</string>
+    <string name="dialog_delete_message">Are you sure you want to delete this subscription?</string>
 
     <!-- Validation Error Dialog & Messages -->
     <string name="dialog_validation_error_title">Input Validation Error</string>
