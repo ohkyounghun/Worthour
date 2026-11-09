@@ -36,4 +36,48 @@
     <!-- Navigation -->
     <string name="nav_home">Home</string>
     <string name="nav_insights">Insights</string>
+
+    <!-- Add / Edit Subscription Strings -->
+    <string name="add_subscription_title">Add Subscription</string>
+    <string name="edit_subscription_title">Edit Subscription</string>
+    <string name="popular_presets">Popular presets</string>
+    <string name="custom_subscription">+ Custom subscription</string>
+    <string name="preset_selected_info">%1$s selected. All preset details are editable.</string>
+    <string name="service_name_label">Service name</string>
+    <string name="price_label">Price (KRW)</string>
+    <string name="billing_cycle_label">Billing cycle</string>
+    <string name="cycle_monthly">Monthly</string>
+    <string name="cycle_yearly">Yearly</string>
+    <string name="next_billing_date_label">Next billing date</string>
+    <string name="trial_end_date_label">Trial end date · Optional</string>
+    <string name="not_set">Not set</string>
+    <string name="linked_android_app_label">Linked Android application</string>
+    <string name="preset_disclaimer">Illustrative prices, not official plans. Add subscriptions manually; linking an app measures this device only.</string>
+    <string name="analysis_method_label">Analysis method</string>
+    <string name="analysis_time_tracking_title">Time Tracking</string>
+    <string name="analysis_time_tracking_desc">Automatically analyze subscription value using Android app usage time.</string>
+    <string name="analysis_non_time_tracking_title">Non-Time Tracking</string>
+    <string name="analysis_non_time_tracking_desc">Manage subscription payments without usage analysis.</string>
+    <string name="linked_apps_section">Linked apps</string>
+    <string name="linked_apps_subtext">Select the apps whose usage time should be included in this subscription.</string>
+    <string name="btn_add_app">+ Add app</string>
+    <string name="btn_save_subscription">Save Subscription</string>
+    <string name="btn_update_subscription">Update Subscription</string>
+    <string name="dialog_select_app_title">연결할 앱 선택</string>
+    <string name="search_apps_hint">앱 검색…</string>
+    <string name="btn_close">닫기</string>
+    <string name="btn_cancel">취소</string>
+    <string name="btn_delete">삭제</string>
+    <string name="dialog_delete_title">구독 삭제</string>
+    <string name="dialog_delete_message">이 구독을 정말로 삭제하시겠습니까?</string>
+
+    <!-- Validation Error Dialog & Messages -->
+    <string name="dialog_validation_error_title">Input Validation Error</string>
+    <string name="dialog_validation_error_message">Please correct the following errors before saving:</string>
+    <string name="error_service_name_blank">Service name cannot be empty.</string>
+    <string name="error_price_invalid">Please enter a valid price.</string>
+    <string name="error_price_out_of_range">Price must be between 1 and 100,000,000 KRW.</string>
+    <string name="error_trial_date_missing">Please select a free trial end date.</string>
+    <string name="error_time_tracking_no_apps">Time Tracking requires at least one linked app.</string>
+    <string name="btn_ok">OK</string>
 </resources>
