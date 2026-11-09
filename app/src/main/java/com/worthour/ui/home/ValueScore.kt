@@ -7,6 +7,8 @@ import com.worthour.ui.theme.ScoreLowBg
 import com.worthour.ui.theme.ScoreLowText
 import com.worthour.ui.theme.ScoreMeasuringBg
 import com.worthour.ui.theme.ScoreMeasuringText
+import com.worthour.ui.theme.ScoreNotTrackedBg
+import com.worthour.ui.theme.ScoreNotTrackedText
 import com.worthour.ui.theme.ScoreOkBg
 import com.worthour.ui.theme.ScoreOkText
 
@@ -18,5 +20,6 @@ enum class ValueScore(
     GOOD("Good", ScoreGoodText, ScoreGoodBg),
     OK("OK", ScoreOkText, ScoreOkBg),
     LOW("Low", ScoreLowText, ScoreLowBg),
-    MEASURING("Measuring", ScoreMeasuringText, ScoreMeasuringBg)
+    MEASURING("Measuring", ScoreMeasuringText, ScoreMeasuringBg),
+    NOT_TRACKED("Not tracked", ScoreNotTrackedText, ScoreNotTrackedBg)
 }

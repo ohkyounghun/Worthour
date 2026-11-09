@@ -26,6 +26,9 @@ val ScoreLowBg = Color(0xFFFEECE9)
 val ScoreMeasuringText = Color(0xFF475569)
 val ScoreMeasuringBg = Color(0xFFF1F5F9)
 
+val ScoreNotTrackedText = Color(0xFF475569)
+val ScoreNotTrackedBg = Color(0xFFE2E8F0)
+
 // D-Day Badge
 val DDayBadgeText = Color(0xFF4F46E5)
 val DDayBadgeBg = Color(0xFFEEF2FF)
