@@ -27,6 +27,12 @@ interface SubscriptionDao {
     @Query("SELECT * FROM subscriptions")
     fun getAllSubscriptions(): Flow<List<SubscriptionEntity>>
 
+    @Query("SELECT * FROM subscriptions WHERE id = :id")
+    fun getSubscriptionById(id: Long): Flow<SubscriptionEntity?>
+
+    @Query("DELETE FROM subscriptions WHERE id = :id")
+    suspend fun deleteSubscriptionById(id: Long)
+
     @Query("SELECT * FROM linked_apps WHERE subscriptionId = :subId")
     fun getLinkedApps(subId: Long): Flow<List<AppEntity>>
 }

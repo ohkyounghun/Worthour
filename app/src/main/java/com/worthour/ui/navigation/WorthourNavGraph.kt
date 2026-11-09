@@ -18,12 +18,14 @@ import com.worthour.ui.permission.PermissionScreen
 object Screen {
     const val HOME = "home"
     const val ADD_SUBSCRIPTION = "add_subscription"
+    const val EDIT_SUBSCRIPTION = "edit_subscription/{subscriptionId}"
     const val PERMISSION = "permission"
     const val DETAIL = "detail/{subscriptionId}"
     const val INSIGHTS = "insights"
     const val NOTIFICATIONS = "notifications"
 
     fun detailRoute(subscriptionId: Long) = "detail/$subscriptionId"
+    fun editRoute(subscriptionId: Long) = "edit_subscription/$subscriptionId"
 }
 
 @Composable
@@ -53,6 +55,17 @@ fun WorthourNavGraph(
             )
         }
 
+        composable(
+            route = Screen.EDIT_SUBSCRIPTION,
+            arguments = listOf(navArgument("subscriptionId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val subscriptionId = backStackEntry.arguments?.getLong("subscriptionId") ?: 0L
+            AddSubscriptionScreen(
+                subscriptionId = subscriptionId,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
         composable(Screen.PERMISSION) {
             PermissionScreen(
                 onPermissionGranted = {
@@ -69,7 +82,7 @@ fun WorthourNavGraph(
             SubscriptionDetailScreen(
                 subscriptionId = subscriptionId,
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToEdit = { /* Navigate to edit screen later */ }
+                onNavigateToEdit = { id -> navController.navigate(Screen.editRoute(id)) }
             )
         }
 
