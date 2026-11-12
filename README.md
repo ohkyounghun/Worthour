@@ -118,3 +118,9 @@ the payment calendar (the Home screen already lists upcoming payments) and the h
 **Together (week 1):** data model, Room database, screen skeleton and notification helper.
 
 > Roles were rebalanced after the scope cut. Proposal under discussion: [#19](https://github.com/ohkyounghun/Worthour/issues/19).
+
+## First Consultation and Next Steps
+
+- **External database and sign-in (#8).** The instructor recommended adding an external database for the final assessment and suggested sign-in as a starting point. We will decide how to connect remote storage to the app and which account data would benefit from being stored remotely. Account-based backup and restoration of subscription records is one option.
+- **Distinctive feature.** The instructor suggested adding one feature that stands out in the final demo. We will choose between a home-screen widget and sharing subscription details through QR generation and camera scanning.
+- **Technical stack and interview.** The instructor said the interview will prioritize the technologies listed in `AGENTS.md`. We will update it to reflect the technologies actually used and prepare to explain how each one works in Worthour.
