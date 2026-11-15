@@ -3,6 +3,7 @@ package com.worthour.ui.home
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.worthour.R
 import com.worthour.data.AnalysisType
 import com.worthour.data.AppDatabase
 import com.worthour.data.PaymentCycle
@@ -86,6 +87,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val _permissionWarning = MutableStateFlow(false)
     val permissionWarning: StateFlow<Boolean> = _permissionWarning.asStateFlow()
 
+    private val _syncStatus = MutableStateFlow<String?>(null)
+    val syncStatus: StateFlow<String?> = _syncStatus.asStateFlow()
+
     private val _currentDate = MutableStateFlow(LocalDate.now())
 
     fun refreshToday() {
@@ -163,6 +167,13 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                     .take(5)
                 _topApps.value = sorted
             }
+        }
+    }
+
+    fun runManualSync() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val count = com.worthour.usage.UsageSyncManager.syncNow(getApplication())
+            _syncStatus.value = getApplication<Application>().getString(R.string.home_sync_result_message, count)
         }
     }
 }

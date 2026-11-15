@@ -14,6 +14,8 @@
     <string name="permission_button_continue">Continue</string>
 
     <string name="home_test_usage_button">Check top used apps today (Test)</string>
+    <string name="home_test_sync_now_button">Run Daily Sync Now (Test)</string>
+    <string name="home_sync_result_message">Synced %1$d usage records into DB.</string>
     <string name="home_permission_warning">Usage permission is missing or no usage history found.</string>
     <string name="home_top_apps_title">Top used apps today:</string>
 
