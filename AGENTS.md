@@ -15,13 +15,10 @@ using real app usage time (cost per hour). See `README.md` for features and scre
 
 | Use | Library |
 |-----|---------|
-| UI | Jetpack Compose + Material 3 |
-| Navigation | Navigation Compose |
-| Local database | Room (with KSP) |
+| UI | Jetpack Compose + Material 3, Navigation Compose |
+| Local database | Room |
 | Usage time | `UsageStatsManager` |
-| Background work | WorkManager |
-| Notifications | `NotificationCompat` + notification channels |
-| Chart | MPAndroidChart (wrapped with `AndroidView`) |
+| Background work and alerts | WorkManager + `NotificationCompat` |
 
 ## Package structure
 
@@ -39,6 +36,7 @@ com.worthour
 ## Rules
 
 - Use Jetpack Compose and Material 3 only. Do not create XML layouts or Fragments.
+- Do not add libraries outside the tech stack above. Draw charts with Compose instead of a chart library.
 - UI state lives in a ViewModel and is exposed as `StateFlow`. Composables do not access Room or system services directly.
 - Screens read data through a repository, never through a DAO directly.
 - Use KSP, not kapt, for Room.
