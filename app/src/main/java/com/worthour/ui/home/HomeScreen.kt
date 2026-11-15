@@ -85,6 +85,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val syncStatus by viewModel.syncStatus.collectAsStateWithLifecycle()
     val lifecycleOwner = LocalLifecycleOwner.current
 
     DisposableEffect(lifecycleOwner) {
@@ -101,6 +102,8 @@ fun HomeScreen(
 
     HomeScreenContent(
         uiState = uiState,
+        syncStatus = syncStatus,
+        onRunManualSync = { viewModel.runManualSync() },
         onNavigateToAdd = onNavigateToAdd,
         onNavigateToDetail = onNavigateToDetail,
         onNavigateToInsights = onNavigateToInsights,
@@ -113,6 +116,8 @@ fun HomeScreen(
 @Composable
 fun HomeScreenContent(
     uiState: HomeUiState,
+    syncStatus: String?,
+    onRunManualSync: () -> Unit,
     onNavigateToAdd: () -> Unit,
     onNavigateToDetail: (Long) -> Unit,
     onNavigateToInsights: () -> Unit,
@@ -183,6 +188,34 @@ fun HomeScreenContent(
             if (uiState.permissionWarning) {
                 item {
                     PermissionWarningBanner(onNavigateToPermission = onNavigateToPermission)
+                }
+            }
+
+            // 3.5. Manual Sync Test Button
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = WorthourSurface)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        androidx.compose.material3.Button(onClick = onRunManualSync) {
+                            Text(stringResource(id = R.string.home_test_sync_now_button))
+                        }
+                        if (syncStatus != null) {
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = syncStatus,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = WorthourPrimary
+                            )
+                        }
+                    }
                 }
             }
 
@@ -766,6 +799,8 @@ fun HomeScreenPreviewAllBadges() {
 
         HomeScreenContent(
             uiState = sampleUiState,
+            syncStatus = null,
+            onRunManualSync = {},
             onNavigateToAdd = {},
             onNavigateToDetail = {},
             onNavigateToInsights = {},
