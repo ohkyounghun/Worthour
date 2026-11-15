@@ -75,7 +75,6 @@ the payment calendar (the Home screen already lists upcoming payments) and the h
 | WorkManager | Daily usage sync, payment reminders | Android component |
 | Notification | Payment alerts with review note | Android component |
 | Room | Local database for subscriptions and usage | Jetpack library |
-| MPAndroidChart | Cost-per-hour chart | 3rd-party library |
 
 > **External database: under review.** The proposal keeps all data on the device (Room).
 > Based on feedback, connecting an external database is being considered. See [#8](https://github.com/ohkyounghun/Worthour/issues/8).
@@ -107,13 +106,14 @@ the payment calendar (the Home screen already lists upcoming payments) and the h
 - Cost-per-hour logic and value score
 - Insights screen with chart
 - Review note in payment alerts
-- External DB integration (if adopted in #8)
+- Sign-in and backup (#27)
 
 **이찬행: subscription & payment management**
 - Figma design, app theme and navigation
 - Add, edit, presets and analysis method
 - Home screen and Subscription Detail screen
 - Payment alerts (free trials included)
+- QR sharing (#28)
 
 **Together (week 1):** data model, Room database, screen skeleton and notification helper.
 
