@@ -21,12 +21,12 @@ Worthour adds **real usage time**, a **cost-per-hour score** and a **review aler
 ## Core idea: cost per hour
 
 ```
-cost per hour = monthly fee ÷ hours used in the last billing cycle
+cost per hour = monthly fee ÷ hours used in the last 30 days
 ```
 
 Usage time comes from Android's app usage data (`UsageStatsManager`).
-A score is shown only after one full billing cycle has been measured.
-(How to handle the first cycle and yearly plans is under review: [#18](https://github.com/ohkyounghun/Worthour/issues/18).)
+A score is shown once at least 7 days of usage have been measured; before that, the badge shows Measuring.
+Yearly plans are counted as yearly fee ÷ 12. (Decided in [#18](https://github.com/ohkyounghun/Worthour/issues/18).)
 
 | Score | Cost per hour |
 |-------|---------------|
@@ -34,7 +34,7 @@ A score is shown only after one full billing cycle has been measured.
 | OK    | ₩1,000 – ₩2,000/h |
 | Low   | above ₩2,000/h |
 
-Example: a ₩17,000 monthly plan used for 2 hours last cycle → **₩8,500 per hour**.
+Example: a ₩17,000 monthly plan used for 2 hours in the last 30 days → **₩8,500 per hour**.
 
 ## How it works
 
@@ -49,7 +49,7 @@ Example: a ₩17,000 monthly plan used for 2 hours last cycle → **₩8,500 per
 |---------|-------------|
 | Add subscription | Presets or manual add, linked to one or more apps |
 | Usage tracking | Daily app usage time per service |
-| Value analysis | Cost per hour after each billing cycle, with a Good / OK / Low score |
+| Value analysis | Cost per hour over the last 30 days, with a Good / OK / Low score |
 | Payment alerts | Before each payment. A free trial's end date counts as the first payment |
 | Review before renewal | Low-score services get a "review before you pay" note in the payment alert |
 
