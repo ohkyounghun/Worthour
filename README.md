@@ -75,9 +75,10 @@ the payment calendar (the Home screen already lists upcoming payments) and the h
 | WorkManager | Daily usage sync, payment reminders | Android component |
 | Notification | Payment alerts with review note | Android component |
 | Room | Local database for subscriptions and usage | Jetpack library |
+| Firebase Authentication | User login | External service |
+| Cloud Firestore | External database for user data | External service |
 
-> **External database: under review.** The proposal keeps all data on the device (Room).
-> Based on feedback, connecting an external database is being considered. See [#8](https://github.com/ohkyounghun/Worthour/issues/8).
+> **External database: Firebase.** Based on feedback, we connect Firebase for login and remote data storage. See [#8](https://github.com/ohkyounghun/Worthour/issues/8).
 
 ## Schedule
 
@@ -88,7 +89,7 @@ the payment calendar (the Home screen already lists upcoming payments) and the h
 | W9 – W11 | Usage tracking & daily sync |
 | W11 – W12 | Payment alerts |
 | W12 – W13 | Value report & chart |
-| W13 – W14 | Polish (+ external DB, if adopted in [#8](https://github.com/ohkyounghun/Worthour/issues/8)) |
+| W13 – W14 | Firebase login & external DB ([#8](https://github.com/ohkyounghun/Worthour/issues/8)), polish |
 | W14 – W15 | Testing & demo video |
 
 | Milestone | Date |

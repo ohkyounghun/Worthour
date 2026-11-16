@@ -7,7 +7,7 @@
 
     <string name="permission_title">Usage Access Permission Guide</string>
     <string name="permission_reason">Worthour analyzes the actual value of your subscriptions based on app usage time.\nDevice \'Usage Access\' permission is required for this feature.</string>
-    <string name="permission_privacy_notice">Rest assured!\nAll collected usage data is stored locally on your device and is never sent externally.</string>
+    <string name="permission_privacy_notice">Rest assured!\nUsage data is used only to analyze the value of your subscriptions.\nWhen you sign in, your data is stored securely in your account.</string>
     <string name="permission_how_to">Tap the button, select \'Worthour\' from the list, and grant permission.</string>
     <string name="permission_button_settings">Go to Settings</string>
     <string name="permission_already_granted">Permission has already been granted.</string>

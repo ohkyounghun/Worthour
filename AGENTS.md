@@ -19,6 +19,7 @@ using real app usage time (cost per hour). See `README.md` for features and scre
 | Local database | Room |
 | Usage time | `UsageStatsManager` |
 | Background work and alerts | WorkManager + `NotificationCompat` |
+| Login and external database | Firebase Authentication + Cloud Firestore |
 
 ## Package structure
 
@@ -42,7 +43,7 @@ com.worthour
 - Use KSP, not kapt, for Room.
 - Add dependencies through `gradle/libs.versions.toml`, not hard-coded versions in `build.gradle.kts`.
 - Put user-facing text in `res/values/strings.xml`.
-- All data stays on the device. Do not add the `INTERNET` permission or any network code unless the team decides to (see issue #8).
+- The team chose Firebase as the external database (issue #8). Use Firebase Authentication for login and Cloud Firestore for remote data. Network access is allowed only for Firebase.
 - Do not invent rules for the value score or the cost-per-hour calculation. They are still under discussion (issue #18). Ask instead.
 - Keep changes small and focused on the task asked. Do not refactor unrelated code.
 - After a change, build the app and report any errors instead of hiding them.
