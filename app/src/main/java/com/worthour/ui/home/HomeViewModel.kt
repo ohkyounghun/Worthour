@@ -10,14 +10,19 @@ import com.worthour.data.PaymentCycle
 import com.worthour.data.SubscriptionEntity
 import com.worthour.data.SubscriptionRepository
 import com.worthour.data.UsageRepository
+import com.worthour.data.ValueScoreCalculator
 import com.worthour.usage.UsageStatsReader
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -99,12 +104,53 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val homeSubscriptionItemsFlow: Flow<List<HomeSubscriptionItem>> = combine(
+        subscriptionRepository.getAllSubscriptions(),
+        _currentDate
+    ) { subs, today ->
+        subs to today
+    }.flatMapLatest { (subs, today) ->
+        if (subs.isEmpty()) {
+            flowOf(emptyList())
+        } else {
+            val startDate = today.minusDays(30)
+            val recordedDaysCountFlow = usageRepository.getRecordedDaysCountFlow(startDate)
+
+            val itemFlows: List<Flow<HomeSubscriptionItem>> = subs.map { sub ->
+                if (sub.analysisType == AnalysisType.NON_TIME_TRACKING) {
+                    flowOf(HomeSubscriptionItem(entity = sub, valueScore = ValueScore.NOT_TRACKED))
+                } else {
+                    val linkedAppsFlow = subscriptionRepository.getLinkedApps(sub.id)
+                    linkedAppsFlow.flatMapLatest { linkedApps ->
+                        val packageNames = linkedApps.map { it.packageName }
+                        val totalUsageFlow = usageRepository.getTotalUsageTimeForPackagesFlow(packageNames, startDate)
+
+                        combine(totalUsageFlow, recordedDaysCountFlow) { totalUsageMillis, recordedDaysCount ->
+                            val result = ValueScoreCalculator.calculate(
+                                subscription = sub,
+                                totalUsageTimeMillis = totalUsageMillis,
+                                recordedDaysCount = recordedDaysCount
+                            )
+                            HomeSubscriptionItem(entity = sub, valueScore = result.valueScore)
+                        }
+                    }
+                }
+            }
+
+            combine(itemFlows) { itemsArray ->
+                itemsArray.toList()
+            }
+        }
+    }
+
     val uiState: StateFlow<HomeUiState> = combine(
         subscriptionRepository.getAllSubscriptions(),
+        homeSubscriptionItemsFlow,
         _permissionWarning,
         _topApps,
         _currentDate
-    ) { subs, permWarning, apps, today ->
+    ) { subs, homeItems, permWarning, apps, today ->
         // 1. Monthly Equivalent Total calculation
         // Exclude subs where free trial is ongoing (today is before freeTrialEndDate)
         val activeForSpending = subs.filter { sub ->
@@ -130,21 +176,14 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 UpcomingPaymentItem(sub, days)
             }
 
-        // 3. Subscription items with appropriate value score badge and sorted by nextPaymentDate
-        val items = subs.sortedBy { it.nextPaymentDate }.map { sub ->
-            val score = if (sub.analysisType == AnalysisType.NON_TIME_TRACKING) {
-                ValueScore.NOT_TRACKED
-            } else {
-                ValueScore.MEASURING
-            }
-            HomeSubscriptionItem(entity = sub, valueScore = score)
-        }
+        // 3. Subscription items sorted by nextPaymentDate
+        val sortedItems = homeItems.sortedBy { it.entity.nextPaymentDate }
 
         HomeUiState(
             totalMonthlySpending = totalSpending,
             activeSubscriptionsCount = activeCount,
             upcomingPayment = upcoming,
-            subscriptions = items,
+            subscriptions = sortedItems,
             permissionWarning = permWarning,
             topApps = apps
         )

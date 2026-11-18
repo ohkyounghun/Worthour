@@ -21,8 +21,10 @@ Worthour adds **real usage time**, a **cost-per-hour score** and a **review aler
 ## Core idea: cost per hour
 
 ```
-cost per hour = monthly fee ÷ hours used in the last 30 days
+cost per hour = (monthly fee × measured days ÷ 30) ÷ hours used in the last 30 days
 ```
+
+The fee is prorated by the number of measured days (up to 30), so a score is fair even before a full 30 days are measured.
 
 Usage time comes from Android's app usage data (`UsageStatsManager`).
 A score is shown once at least 7 days of usage have been measured; before that, the badge shows Measuring.
@@ -34,7 +36,7 @@ Yearly plans are counted as yearly fee ÷ 12. (Decided in [#18](https://github.c
 | OK    | ₩1,000 – ₩2,000/h |
 | Low   | above ₩2,000/h |
 
-Example: a ₩17,000 monthly plan used for 2 hours in the last 30 days → **₩8,500 per hour**.
+Example: a ₩17,000 monthly plan used for 2 hours over 30 measured days → **₩8,500 per hour**.
 
 ## How it works
 

@@ -2,6 +2,8 @@ package com.worthour.data
 
 import com.worthour.usage.UsageStatsReader
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 
 class UsageRepository(
@@ -35,5 +37,23 @@ class UsageRepository(
         endDate: LocalDate
     ): Long {
         return usageStatsReader.getSubscriptionUsageTime(packageNames, startDate, endDate)
+    }
+
+    suspend fun getTotalUsageTimeForPackages(packageNames: List<String>, startDate: LocalDate): Long {
+        if (packageNames.isEmpty()) return 0L
+        return usageRecordDao.getTotalUsageTimeForPackages(packageNames, startDate) ?: 0L
+    }
+
+    fun getTotalUsageTimeForPackagesFlow(packageNames: List<String>, startDate: LocalDate): Flow<Long> {
+        if (packageNames.isEmpty()) return flowOf(0L)
+        return usageRecordDao.getTotalUsageTimeForPackagesFlow(packageNames, startDate).map { it ?: 0L }
+    }
+
+    suspend fun getRecordedDaysCount(startDate: LocalDate): Int {
+        return usageRecordDao.getRecordedDaysCount(startDate)
+    }
+
+    fun getRecordedDaysCountFlow(startDate: LocalDate): Flow<Int> {
+        return usageRecordDao.getRecordedDaysCountFlow(startDate)
     }
 }
