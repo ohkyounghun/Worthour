@@ -8,7 +8,7 @@ import java.time.LocalDate
 
 class UsageRepository(
     private val usageRecordDao: UsageRecordDao,
-    private val usageStatsReader: UsageStatsReader
+    private val usageStatsReader: UsageStatsReader? = null
 ) {
 
     suspend fun insertUsageRecord(record: UsageRecordEntity): Long {
@@ -24,11 +24,11 @@ class UsageRepository(
     }
 
     fun getUsageForDate(date: LocalDate): Map<String, Long> {
-        return usageStatsReader.getUsageForDate(date)
+        return usageStatsReader?.getUsageForDate(date) ?: emptyMap()
     }
 
     fun getDailyUsageForLastDays(days: Int = 7): Map<LocalDate, Map<String, Long>> {
-        return usageStatsReader.getDailyUsageForLastDays(days)
+        return usageStatsReader?.getDailyUsageForLastDays(days) ?: emptyMap()
     }
 
     fun getSubscriptionUsageTime(
@@ -36,7 +36,7 @@ class UsageRepository(
         startDate: LocalDate,
         endDate: LocalDate
     ): Long {
-        return usageStatsReader.getSubscriptionUsageTime(packageNames, startDate, endDate)
+        return usageStatsReader?.getSubscriptionUsageTime(packageNames, startDate, endDate) ?: 0L
     }
 
     suspend fun getTotalUsageTimeForPackages(packageNames: List<String>, startDate: LocalDate): Long {
