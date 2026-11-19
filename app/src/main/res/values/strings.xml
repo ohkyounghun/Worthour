@@ -43,6 +43,20 @@
     <string name="nav_home">Home</string>
     <string name="nav_insights">Insights</string>
 
+    <!-- Insights Screen UI strings -->
+    <string name="insights_title">Insights</string>
+    <string name="insights_cost_per_hour_title">Cost per Hour Analysis</string>
+    <string name="insights_cost_per_hour_subtitle">Sorted by highest cost per hour first.</string>
+    <string name="insights_empty_title">No subscriptions available for analysis.</string>
+    <string name="insights_empty_subtitle">Subscriptions will appear once 7 days of usage are measured.</string>
+    <string name="insights_per_hour_format">₩%1$s/h</string>
+    <string name="insights_no_usage">No usage recorded</string>
+    <string name="insights_guide_title">Value Score Criteria</string>
+    <string name="insights_guide_good">· Good: Under ₩1,000/h</string>
+    <string name="insights_guide_ok">· OK: Up to ₩2,000/h</string>
+    <string name="insights_guide_low">· Low: Over ₩2,000/h</string>
+    <string name="insights_guide_period">Based on app usage in the last 30 days.</string>
+
     <!-- Add / Edit Subscription Strings -->
     <string name="add_subscription_title">Add Subscription</string>
     <string name="edit_subscription_title">Edit Subscription</string>
