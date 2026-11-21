@@ -56,9 +56,6 @@ dependencies {
     implementation(libs.androidx.work.runtime.ktx)
     
     testImplementation(libs.junit)
-    testImplementation(libs.androidx.work.testing)
-    testImplementation(libs.androidx.test.core)
-    testImplementation(libs.robolectric)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)
