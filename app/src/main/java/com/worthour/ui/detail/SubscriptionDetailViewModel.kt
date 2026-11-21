@@ -7,6 +7,7 @@ import com.worthour.data.AppDatabase
 import com.worthour.data.AppEntity
 import com.worthour.data.SubscriptionEntity
 import com.worthour.data.SubscriptionRepository
+import com.worthour.notification.PaymentNotificationScheduler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -53,6 +54,7 @@ class SubscriptionDetailViewModel(application: Application) : AndroidViewModel(a
     fun deleteSubscription(subscriptionId: Long) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
+                PaymentNotificationScheduler.cancelNotification(getApplication(), subscriptionId)
                 repository.deleteSubscriptionById(subscriptionId)
                 _uiState.update { it.copy(isDeleted = true) }
             } catch (e: Exception) {

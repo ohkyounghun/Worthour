@@ -100,4 +100,16 @@
     <string name="error_trial_date_missing">Please select a free trial end date.</string>
     <string name="error_time_tracking_no_apps">Time Tracking requires at least one linked app.</string>
     <string name="btn_ok">OK</string>
+
+    <!-- Payment Notification Strings -->
+    <string name="notification_payment_title">%1$s Payment Reminder</string>
+    <string name="notification_payment_trial_title">%1$s Free Trial End</string>
+    <string name="notification_payment_body">Your payment for %1$s (%2$s) is scheduled for %3$s.</string>
+    <string name="notification_payment_trial_body">Your free trial for %1$s ends on %2$s.</string>
+
+    <!-- Notification Permission Dialog Strings -->
+    <string name="dialog_notification_permission_title">Notification Permission Required</string>
+    <string name="dialog_notification_permission_message">Notifications for Worthour are currently turned off in Settings. Enable notifications so you don\'t miss upcoming payment alerts.</string>
+    <string name="btn_go_to_settings">Go to Settings</string>
+    <string name="btn_not_now">Not Now</string>
 </resources>

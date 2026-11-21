@@ -1,6 +1,12 @@
 package com.worthour.ui.add
 
 import android.app.DatePickerDialog
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -94,6 +100,56 @@ fun AddSubscriptionScreen(
     viewModel: AddSubscriptionViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        viewModel.onNotificationPermissionResult(isGranted)
+    }
+
+    LaunchedEffect(uiState.requestNotificationPermissionTrigger) {
+        if (uiState.requestNotificationPermissionTrigger) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                notificationPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+            } else {
+                viewModel.onNotificationPermissionResult(true)
+            }
+        }
+    }
+
+    if (uiState.showNotificationSettingsDialog) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { viewModel.completeSaveAndDismissPermissionDialog() },
+            title = { Text(stringResource(id = R.string.dialog_notification_permission_title), fontWeight = FontWeight.Bold) },
+            text = { Text(stringResource(id = R.string.dialog_notification_permission_message)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.completeSaveAndDismissPermissionDialog()
+                        try {
+                            val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                                putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                            }
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            val fallbackIntent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                data = Uri.fromParts("package", context.packageName, null)
+                            }
+                            context.startActivity(fallbackIntent)
+                        }
+                    }
+                ) {
+                    Text(stringResource(id = R.string.btn_go_to_settings), fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { viewModel.completeSaveAndDismissPermissionDialog() }) {
+                    Text(stringResource(id = R.string.btn_not_now))
+                }
+            }
+        )
+    }
 
     LaunchedEffect(subscriptionId) {
         if (subscriptionId > 0L) {
