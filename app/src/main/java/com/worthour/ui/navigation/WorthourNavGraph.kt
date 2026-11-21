@@ -1,6 +1,7 @@
 package com.worthour.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -32,8 +33,15 @@ object Screen {
 fun WorthourNavGraph(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    startDestination: String = Screen.HOME
+    startDestination: String = Screen.HOME,
+    deepLinkSubscriptionId: Long? = null
 ) {
+    LaunchedEffect(deepLinkSubscriptionId) {
+        if (deepLinkSubscriptionId != null && deepLinkSubscriptionId > 0L) {
+            navController.navigate(Screen.detailRoute(deepLinkSubscriptionId))
+        }
+    }
+
     NavHost(
         navController = navController,
         startDestination = startDestination,

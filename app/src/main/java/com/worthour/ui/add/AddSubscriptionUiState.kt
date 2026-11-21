@@ -2,6 +2,7 @@ package com.worthour.ui.add
 
 import com.worthour.data.AnalysisType
 import com.worthour.data.PaymentCycle
+import com.worthour.data.SubscriptionEntity
 import java.time.LocalDate
 
 data class InstalledAppInfo(
@@ -28,6 +29,9 @@ data class AddSubscriptionUiState(
     val trialDateError: String? = null,
     val validationErrors: List<String> = emptyList(),
     val showValidationErrorDialog: Boolean = false,
+    val requestNotificationPermissionTrigger: Boolean = false,
+    val showNotificationSettingsDialog: Boolean = false,
+    val pendingSavedSubscription: SubscriptionEntity? = null,
     val isLoading: Boolean = false,
     val isSaving: Boolean = false,
     val isSavedSuccess: Boolean = false,

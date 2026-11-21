@@ -3,6 +3,9 @@ package com.worthour.ui.add
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.worthour.R
@@ -12,6 +15,7 @@ import com.worthour.data.PaymentCycle
 import com.worthour.data.PresetSubscription
 import com.worthour.data.SubscriptionEntity
 import com.worthour.data.SubscriptionRepository
+import com.worthour.notification.PaymentNotificationScheduler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -163,6 +167,29 @@ class AddSubscriptionViewModel(application: Application) : AndroidViewModel(appl
         _uiState.update { it.copy(showValidationErrorDialog = false) }
     }
 
+    fun onNotificationPermissionResult(granted: Boolean) {
+        val pendingSub = _uiState.value.pendingSavedSubscription
+        _uiState.update { it.copy(requestNotificationPermissionTrigger = false) }
+
+        if (granted) {
+            if (pendingSub != null) {
+                PaymentNotificationScheduler.scheduleNotification(getApplication(), pendingSub)
+            }
+            _uiState.update { it.copy(isSavedSuccess = true) }
+        } else {
+            _uiState.update { it.copy(showNotificationSettingsDialog = true) }
+        }
+    }
+
+    fun completeSaveAndDismissPermissionDialog() {
+        _uiState.update {
+            it.copy(
+                showNotificationSettingsDialog = false,
+                isSavedSuccess = true
+            )
+        }
+    }
+
     fun saveSubscription() {
         val state = _uiState.value
         val nameTrimmed = state.serviceName.trim()
@@ -222,8 +249,30 @@ class AddSubscriptionViewModel(application: Application) : AndroidViewModel(appl
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.update { it.copy(isSaving = true) }
             try {
-                repository.saveSubscriptionWithApps(entity, state.linkedPackages)
-                _uiState.update { it.copy(isSaving = false, isSavedSuccess = true) }
+                val savedId = repository.saveSubscriptionWithApps(entity, state.linkedPackages)
+                val savedEntity = entity.copy(id = savedId)
+
+                val hasNotificationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    ContextCompat.checkSelfPermission(
+                        getApplication(),
+                        android.Manifest.permission.POST_NOTIFICATIONS
+                    ) == PackageManager.PERMISSION_GRANTED
+                } else {
+                    true
+                }
+
+                if (hasNotificationPermission) {
+                    PaymentNotificationScheduler.scheduleNotification(getApplication(), savedEntity)
+                    _uiState.update { it.copy(isSaving = false, isSavedSuccess = true) }
+                } else {
+                    _uiState.update {
+                        it.copy(
+                            isSaving = false,
+                            pendingSavedSubscription = savedEntity,
+                            requestNotificationPermissionTrigger = true
+                        )
+                    }
+                }
             } catch (e: Exception) {
                 _uiState.update { it.copy(isSaving = false, errorMessage = "Failed to save. Please try again.") }
             }

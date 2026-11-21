@@ -47,6 +47,8 @@ com.worthour
 - Value score rules (decided in issue #18): cost per hour = (monthly fee × measured days ÷ 30) ÷ usage hours in the last 30 days, with measured days capped at 30. Show Measuring until at least 7 days are measured. Free trials use the regular fee. Yearly plans use yearly fee ÷ 12. Good < ₩1,000/h, OK ≤ ₩2,000/h, Low > ₩2,000/h. Do not invent other rules. Ask instead.
 - Keep changes small and focused on the task asked. Do not refactor unrelated code.
 - After a change, build the app and report any errors instead of hiding them.
+- Report build results, unit tests, code inspection, and device testing separately. Claim runtime verification only when the behavior was actually observed.
+- After implementation, check each issue requirement and report anything incomplete or unverified.
 
 ## Secrets
 
