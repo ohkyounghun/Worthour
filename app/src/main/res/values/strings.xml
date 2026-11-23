@@ -137,4 +137,27 @@
     <string name="account_msg_login_success">Successfully signed in.</string>
     <string name="account_msg_signup_success">Account created and signed in.</string>
     <string name="account_msg_logout_success">Signed out.</string>
+
+    <!-- Subscription Detail Screen Strings -->
+    <string name="detail_title">Subscription Detail</string>
+    <string name="detail_last_30_days_subtitle">Last 30 days · %1$s – %2$s</string>
+    <string name="detail_fee_label">Monthly Fee</string>
+    <string name="detail_yearly_fee_label">Yearly Fee</string>
+    <string name="detail_usage_30_days_label">Usage (Last 30 days)</string>
+    <string name="detail_cost_per_hour_label">Cost per Hour</string>
+    <string name="detail_formula_format">₩%1$s fee ÷ %2$s usage in last 30 days</string>
+    <string name="detail_delete_error">Failed to delete subscription. Please try again.</string>
+    <string name="detail_formula_measuring">Measuring (At least 7 days of usage needed)</string>
+    <string name="detail_formula_not_tracked">Usage analysis disabled for Non-Time Tracking</string>
+    <string name="detail_formula_no_usage">No app usage recorded in the last 30 days</string>
+    <string name="detail_daily_usage_title">Daily usage</string>
+    <string name="detail_total_minutes_format">Total %1$dm</string>
+    <string name="detail_next_billing_date">Next Billing Date</string>
+    <string name="detail_trial_ends_date">Free Trial Ends</string>
+    <string name="detail_disclaimer">Current Android device only. Ratings are based on app usage time.</string>
+    <string name="btn_edit_subscription">Edit Subscription</string>
+    <string name="btn_delete_subscription">Delete Subscription</string>
+    <string name="detail_no_data">No data</string>
+    <string name="detail_no_apps_linked">No apps linked</string>
+    <string name="detail_not_found">Subscription not found.</string>
 </resources>

@@ -18,6 +18,9 @@ interface UsageRecordDao {
     @Query("SELECT * FROM usage_records WHERE packageName = :packageName AND date >= :startDate AND date <= :endDate")
     fun getUsageRecords(packageName: String, startDate: LocalDate, endDate: LocalDate): Flow<List<UsageRecordEntity>>
 
+    @Query("SELECT * FROM usage_records WHERE packageName IN (:packageNames) AND date >= :startDate AND date <= :endDate ORDER BY date DESC")
+    fun getUsageRecordsForPackages(packageNames: List<String>, startDate: LocalDate, endDate: LocalDate): Flow<List<UsageRecordEntity>>
+
     @Query("SELECT SUM(usageTimeMillis) FROM usage_records WHERE packageName IN (:packageNames) AND date >= :startDate")
     suspend fun getTotalUsageTimeForPackages(packageNames: List<String>, startDate: LocalDate): Long?
 
