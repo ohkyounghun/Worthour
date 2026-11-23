@@ -38,11 +38,11 @@ data class AccountUiState(
 )
 
 class AccountViewModel(
-    application: Application,
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
-    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    application: Application
 ) : AndroidViewModel(application) {
 
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val subscriptionRepository: SubscriptionRepository
 
     private val _uiState = MutableStateFlow(AccountUiState(currentUser = auth.currentUser))
