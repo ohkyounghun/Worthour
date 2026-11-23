@@ -33,6 +33,12 @@ interface SubscriptionDao {
     @Query("DELETE FROM subscriptions WHERE id = :id")
     suspend fun deleteSubscriptionById(id: Long)
 
+    @Query("DELETE FROM subscriptions")
+    suspend fun deleteAllSubscriptions()
+
+    @Query("DELETE FROM linked_apps")
+    suspend fun deleteAllLinkedApps()
+
     @Query("SELECT * FROM linked_apps WHERE subscriptionId = :subId")
     fun getLinkedApps(subId: Long): Flow<List<AppEntity>>
 }

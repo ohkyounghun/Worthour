@@ -24,6 +24,8 @@ class GetSubscriptionValueUseCaseTest {
         override fun getAllSubscriptions(): Flow<List<SubscriptionEntity>> = flowOf(subscriptions)
         override fun getSubscriptionById(id: Long): Flow<SubscriptionEntity?> = flowOf(subscriptions.firstOrNull { it.id == id })
         override suspend fun deleteSubscriptionById(id: Long) {}
+        override suspend fun deleteAllSubscriptions() {}
+        override suspend fun deleteAllLinkedApps() {}
         override fun getLinkedApps(subId: Long): Flow<List<AppEntity>> = flowOf(linkedAppsMap[subId] ?: emptyList())
     }
 

@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.worthour.ui.account.AccountScreen
 import com.worthour.ui.add.AddSubscriptionScreen
 import com.worthour.ui.detail.SubscriptionDetailScreen
 import com.worthour.ui.home.HomeScreen
@@ -24,6 +25,7 @@ object Screen {
     const val DETAIL = "detail/{subscriptionId}"
     const val INSIGHTS = "insights"
     const val NOTIFICATIONS = "notifications"
+    const val ACCOUNT = "account"
 
     fun detailRoute(subscriptionId: Long) = "detail/$subscriptionId"
     fun editRoute(subscriptionId: Long) = "edit_subscription/$subscriptionId"
@@ -53,7 +55,8 @@ fun WorthourNavGraph(
                 onNavigateToDetail = { id -> navController.navigate(Screen.detailRoute(id)) },
                 onNavigateToInsights = { navController.navigate(Screen.INSIGHTS) },
                 onNavigateToNotifications = { navController.navigate(Screen.NOTIFICATIONS) },
-                onNavigateToPermission = { navController.navigate(Screen.PERMISSION) }
+                onNavigateToPermission = { navController.navigate(Screen.PERMISSION) },
+                onNavigateToAccount = { navController.navigate(Screen.ACCOUNT) }
             )
         }
 
@@ -102,6 +105,12 @@ fun WorthourNavGraph(
 
         composable(Screen.NOTIFICATIONS) {
             NotificationScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(Screen.ACCOUNT) {
+            AccountScreen(
                 onNavigateBack = { navController.popBackStack() }
             )
         }

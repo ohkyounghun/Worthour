@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Event
@@ -81,6 +82,7 @@ fun HomeScreen(
     onNavigateToInsights: () -> Unit,
     onNavigateToNotifications: () -> Unit,
     onNavigateToPermission: () -> Unit,
+    onNavigateToAccount: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = viewModel()
 ) {
@@ -109,6 +111,7 @@ fun HomeScreen(
         onNavigateToInsights = onNavigateToInsights,
         onNavigateToNotifications = onNavigateToNotifications,
         onNavigateToPermission = onNavigateToPermission,
+        onNavigateToAccount = onNavigateToAccount,
         modifier = modifier
     )
 }
@@ -123,6 +126,7 @@ fun HomeScreenContent(
     onNavigateToInsights: () -> Unit,
     onNavigateToNotifications: () -> Unit,
     onNavigateToPermission: () -> Unit,
+    onNavigateToAccount: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val currentMonthYear = remember {
@@ -131,7 +135,10 @@ fun HomeScreenContent(
 
     Scaffold(
         topBar = {
-            HomeTopAppBar(onNavigateToNotifications = onNavigateToNotifications)
+            HomeTopAppBar(
+                onNavigateToNotifications = onNavigateToNotifications,
+                onNavigateToAccount = onNavigateToAccount
+            )
         },
         bottomBar = {
             WorthourBottomNavigationBar(
@@ -278,6 +285,7 @@ fun HomeScreenContent(
 @Composable
 fun HomeTopAppBar(
     onNavigateToNotifications: () -> Unit,
+    onNavigateToAccount: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
@@ -313,6 +321,13 @@ fun HomeTopAppBar(
                 Icon(
                     imageVector = Icons.Default.Notifications,
                     contentDescription = "Notifications",
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
+            IconButton(onClick = onNavigateToAccount) {
+                Icon(
+                    imageVector = Icons.Default.AccountCircle,
+                    contentDescription = stringResource(id = R.string.home_top_bar_account),
                     tint = MaterialTheme.colorScheme.onSurface
                 )
             }
@@ -805,7 +820,8 @@ fun HomeScreenPreviewAllBadges() {
             onNavigateToDetail = {},
             onNavigateToInsights = {},
             onNavigateToNotifications = {},
-            onNavigateToPermission = {}
+            onNavigateToPermission = {},
+            onNavigateToAccount = {}
         )
     }
 }
