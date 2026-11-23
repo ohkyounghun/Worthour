@@ -62,6 +62,17 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val subscriptionRepository: SubscriptionRepository
     private val getSubscriptionValueUseCase: GetSubscriptionValueUseCase
 
+    private val _topApps = MutableStateFlow<List<TopAppUsage>>(emptyList())
+    val topApps: StateFlow<List<TopAppUsage>> = _topApps.asStateFlow()
+
+    private val _permissionWarning = MutableStateFlow(false)
+    val permissionWarning: StateFlow<Boolean> = _permissionWarning.asStateFlow()
+
+    private val _syncStatus = MutableStateFlow<String?>(null)
+    val syncStatus: StateFlow<String?> = _syncStatus.asStateFlow()
+
+    private val _currentDate = MutableStateFlow(LocalDate.now())
+
     init {
         val database = AppDatabase.getDatabase(application)
         val usageStatsReader = UsageStatsReader(application)
@@ -82,17 +93,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
-
-    private val _topApps = MutableStateFlow<List<TopAppUsage>>(emptyList())
-    val topApps: StateFlow<List<TopAppUsage>> = _topApps.asStateFlow()
-
-    private val _permissionWarning = MutableStateFlow(false)
-    val permissionWarning: StateFlow<Boolean> = _permissionWarning.asStateFlow()
-
-    private val _syncStatus = MutableStateFlow<String?>(null)
-    val syncStatus: StateFlow<String?> = _syncStatus.asStateFlow()
-
-    private val _currentDate = MutableStateFlow(LocalDate.now())
 
     fun refreshToday() {
         val now = LocalDate.now()
