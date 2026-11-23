@@ -23,6 +23,15 @@ class UsageRepository(
         return usageRecordDao.getUsageRecords(packageName, startDate, endDate)
     }
 
+    fun getUsageRecordsForPackages(
+        packageNames: List<String>,
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): Flow<List<UsageRecordEntity>> {
+        if (packageNames.isEmpty()) return flowOf(emptyList())
+        return usageRecordDao.getUsageRecordsForPackages(packageNames, startDate, endDate)
+    }
+
     fun getUsageForDate(date: LocalDate): Map<String, Long> {
         return usageStatsReader?.getUsageForDate(date) ?: emptyMap()
     }

@@ -36,6 +36,7 @@ class GetSubscriptionValueUseCaseTest {
         override suspend fun insertUsageRecord(record: UsageRecordEntity) = 1L
         override suspend fun getUsageRecord(packageName: String, date: LocalDate): UsageRecordEntity? = null
         override fun getUsageRecords(packageName: String, startDate: LocalDate, endDate: LocalDate) = flowOf(emptyList<UsageRecordEntity>())
+        override fun getUsageRecordsForPackages(packageNames: List<String>, startDate: LocalDate, endDate: LocalDate) = flowOf(emptyList<UsageRecordEntity>())
         override suspend fun getTotalUsageTimeForPackages(packageNames: List<String>, startDate: LocalDate) = packageUsageMap[packageNames] ?: 0L
         override fun getTotalUsageTimeForPackagesFlow(packageNames: List<String>, startDate: LocalDate) = flowOf(packageUsageMap[packageNames] ?: 0L)
         override suspend fun getRecordedDaysCount(startDate: LocalDate) = recordedDaysCount
