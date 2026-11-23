@@ -40,6 +40,11 @@ class SubscriptionRepository(private val subscriptionDao: SubscriptionDao) {
         subscriptionDao.deleteSubscriptionById(id)
     }
 
+    suspend fun deleteAllSubscriptions() {
+        subscriptionDao.deleteAllLinkedApps()
+        subscriptionDao.deleteAllSubscriptions()
+    }
+
     suspend fun insertSubscription(subscription: SubscriptionEntity): Long {
         return subscriptionDao.insertSubscription(subscription)
     }

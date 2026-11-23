@@ -112,4 +112,29 @@
     <string name="dialog_notification_permission_message">Notifications for Worthour are currently turned off in Settings. Enable notifications so you don\'t miss upcoming payment alerts.</string>
     <string name="btn_go_to_settings">Go to Settings</string>
     <string name="btn_not_now">Not Now</string>
+
+    <!-- Account Screen Strings -->
+    <string name="home_top_bar_account">Account Settings</string>
+    <string name="account_title">Account</string>
+    <string name="account_status_guest">Guest Mode</string>
+    <string name="account_status_logged_in">Signed in as %1$s</string>
+    <string name="account_guest_notice">You can use all features without signing in. Signing in allows you to back up your subscription data securely.</string>
+    <string name="account_email_label">Email</string>
+    <string name="account_password_label">Password</string>
+    <string name="account_btn_login">Sign In</string>
+    <string name="account_btn_signup">Sign Up</string>
+    <string name="account_btn_logout">Sign Out</string>
+    <string name="account_section_backup_title">Cloud Sync &amp; Backup</string>
+    <string name="account_btn_backup">Backup Subscriptions</string>
+    <string name="account_btn_restore">Restore Subscriptions</string>
+    <string name="account_msg_backup_success">Subscriptions successfully backed up to cloud.</string>
+    <string name="account_msg_restore_success">Subscriptions successfully restored from cloud.</string>
+    <string name="account_msg_no_backup_found">No backup data found in cloud.</string>
+    <string name="account_dialog_restore_title">Restore Subscriptions</string>
+    <string name="account_dialog_restore_message">Restoring backup data will replace all subscription data currently saved on this device. Do you want to proceed?</string>
+    <string name="account_btn_restore_confirm">Restore</string>
+    <string name="account_error_empty_fields">Please enter both email and password.</string>
+    <string name="account_msg_login_success">Successfully signed in.</string>
+    <string name="account_msg_signup_success">Account created and signed in.</string>
+    <string name="account_msg_logout_success">Signed out.</string>
 </resources>
