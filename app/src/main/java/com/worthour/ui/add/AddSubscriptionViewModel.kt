@@ -29,15 +29,14 @@ import java.util.Locale
 class AddSubscriptionViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: SubscriptionRepository
+    private val _uiState = MutableStateFlow(AddSubscriptionUiState())
+    val uiState: StateFlow<AddSubscriptionUiState> = _uiState.asStateFlow()
 
     init {
         val database = AppDatabase.getDatabase(application)
         repository = SubscriptionRepository(database.subscriptionDao())
         loadInstalledApps()
     }
-
-    private val _uiState = MutableStateFlow(AddSubscriptionUiState())
-    val uiState: StateFlow<AddSubscriptionUiState> = _uiState.asStateFlow()
 
     fun initializeForEdit(subscriptionId: Long) {
         if (subscriptionId <= 0L || _uiState.value.isEditMode) return
