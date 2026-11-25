@@ -20,6 +20,7 @@ using real app usage time (cost per hour). See `README.md` for features and scre
 | Usage time | `UsageStatsManager` |
 | Background work and alerts | WorkManager + `NotificationCompat` |
 | Login and external database | Firebase Authentication + Cloud Firestore |
+| Exchange rate API | Retrofit + converter-gson |
 
 ## Package structure
 
@@ -43,7 +44,7 @@ com.worthour
 - Use KSP, not kapt, for Room.
 - Add dependencies through `gradle/libs.versions.toml`, not hard-coded versions in `build.gradle.kts`.
 - Put user-facing text in `res/values/strings.xml`.
-- The team chose Firebase as the external database (issue #8). Use Firebase Authentication for login and Cloud Firestore for remote data. Network access is allowed only for Firebase.
+- The team chose Firebase as the external database (issue #8). Use Firebase Authentication for login and Cloud Firestore for remote data. Network access is allowed only for Firebase and api.frankfurter.dev.
 - Value score rules (decided in issue #18): cost per hour = (monthly fee × measured days ÷ 30) ÷ usage hours in the last 30 days, with measured days capped at 30. Show Measuring until at least 7 days are measured. Free trials use the regular fee. Yearly plans use yearly fee ÷ 12. Good < ₩1,000/h, OK ≤ ₩2,000/h, Low > ₩2,000/h. Do not invent other rules. Ask instead.
 - Keep changes small and focused on the task asked. Do not refactor unrelated code.
 - After a change, build the app and report any errors instead of hiding them.
