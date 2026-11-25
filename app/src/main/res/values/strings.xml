@@ -16,6 +16,7 @@
     <string name="home_test_usage_button">Check top used apps today (Test)</string>
     <string name="home_test_sync_now_button">Run Daily Sync Now (Test)</string>
     <string name="home_sync_result_message">Synced %1$d usage records into DB.</string>
+    <string name="home_sync_result_message_with_rate">Synced %1$d usage records into DB. (Exchange rate: %2$s KRW)</string>
     <string name="home_permission_warning">Usage permission is missing or no usage history found.</string>
     <string name="home_top_apps_title">Top used apps today:</string>
 
@@ -28,6 +29,7 @@
     <string name="home_footer_caption">Manually added · Usage from this Android device</string>
     <string name="home_next_bill">Next bill · %1$s</string>
     <string name="home_per_month">₩%1$s/mo</string>
+    <string name="currency_label">Currency</string>
     <string name="home_per_year">₩%1$s/yr</string>
     <string name="home_empty_title">No subscriptions added yet.</string>
     <string name="home_empty_subtitle">Tap the + button to add a new subscription!</string>
@@ -65,6 +67,7 @@
     <string name="preset_selected_info">%1$s selected. All preset details are editable.</string>
     <string name="service_name_label">Service name</string>
     <string name="price_label">Price (KRW)</string>
+    <string name="price_label_usd">Price (USD)</string>
     <string name="billing_cycle_label">Billing cycle</string>
     <string name="cycle_monthly">Monthly</string>
     <string name="cycle_yearly">Yearly</string>

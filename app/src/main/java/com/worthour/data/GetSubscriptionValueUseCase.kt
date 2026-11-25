@@ -11,7 +11,8 @@ import java.time.LocalDate
 
 class GetSubscriptionValueUseCase(
     private val subscriptionRepository: SubscriptionRepository,
-    private val usageRepository: UsageRepository
+    private val usageRepository: UsageRepository,
+    private val exchangeRateRepository: ExchangeRateRepository? = null
 ) {
 
     /**
@@ -30,6 +31,8 @@ class GetSubscriptionValueUseCase(
         val recordedDaysCountFlow = usageRepository.getRecordedDaysCountFlow(startDate)
         val linkedAppsFlow = subscriptionRepository.getLinkedApps(subscription.id)
 
+        val usdToKrwRate = exchangeRateRepository?.getSavedUsdToKrwRate()
+
         return linkedAppsFlow.flatMapLatest { linkedApps ->
             val packageNames = linkedApps.map { it.packageName }
             val totalUsageFlow = usageRepository.getTotalUsageTimeForPackagesFlow(packageNames, startDate)
@@ -38,7 +41,8 @@ class GetSubscriptionValueUseCase(
                 ValueScoreCalculator.calculate(
                     subscription = subscription,
                     totalUsageTimeMillis = totalUsageMillis,
-                    recordedDaysCount = recordedDaysCount
+                    recordedDaysCount = recordedDaysCount,
+                    usdToKrwRate = usdToKrwRate
                 )
             }
         }

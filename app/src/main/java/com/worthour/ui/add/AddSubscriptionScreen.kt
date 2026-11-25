@@ -82,6 +82,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.worthour.R
 import com.worthour.data.AnalysisType
+import com.worthour.data.Currency
 import com.worthour.data.PaymentCycle
 import com.worthour.data.PresetSubscription
 import com.worthour.ui.home.SubscriptionLogoMapper
@@ -170,6 +171,7 @@ fun AddSubscriptionScreen(
         onSelectCustom = { viewModel.selectCustomSubscription() },
         onUpdateServiceName = { viewModel.updateServiceName(it) },
         onUpdatePrice = { viewModel.updatePrice(it) },
+        onUpdateCurrency = { viewModel.updateCurrency(it) },
         onUpdateCycle = { viewModel.updateCycle(it) },
         onUpdateNextPaymentDate = { viewModel.updateNextPaymentDate(it) },
         onToggleFreeTrial = { viewModel.toggleFreeTrial(it) },
@@ -192,6 +194,7 @@ fun AddSubscriptionContent(
     onSelectCustom: () -> Unit,
     onUpdateServiceName: (String) -> Unit,
     onUpdatePrice: (String) -> Unit,
+    onUpdateCurrency: (Currency) -> Unit,
     onUpdateCycle: (PaymentCycle) -> Unit,
     onUpdateNextPaymentDate: (LocalDate) -> Unit,
     onToggleFreeTrial: (Boolean) -> Unit,
@@ -395,10 +398,16 @@ fun AddSubscriptionContent(
                 OutlinedTextField(
                     value = uiState.priceText,
                     onValueChange = onUpdatePrice,
-                    label = { Text(stringResource(id = R.string.price_label)) },
-                    prefix = { Text("₩ ", fontWeight = FontWeight.Bold) },
-                    visualTransformation = currencyTransformation,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    label = {
+                        Text(
+                            stringResource(
+                                id = if (uiState.currency == Currency.USD) R.string.price_label_usd else R.string.price_label
+                            )
+                        )
+                    },
+                    prefix = { Text(if (uiState.currency == Currency.USD) "$ " else "₩ ", fontWeight = FontWeight.Bold) },
+                    visualTransformation = if (uiState.currency == Currency.USD) VisualTransformation.None else currencyTransformation,
+                    keyboardOptions = KeyboardOptions(keyboardType = if (uiState.currency == Currency.USD) KeyboardType.Decimal else KeyboardType.Number),
                     trailingIcon = {
                         Icon(
                             imageVector = Icons.Default.Edit,
@@ -417,6 +426,84 @@ fun AddSubscriptionContent(
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
+            }
+
+            // 3.5. Currency Selection Toggle
+            item {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = stringResource(id = R.string.currency_label),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp)
+                            .clip(RoundedCornerShape(24.dp))
+                            .background(WorthourSurface)
+                            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(24.dp))
+                            .padding(4.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(20.dp))
+                                .background(if (uiState.currency == Currency.KRW) WorthourPrimary.copy(alpha = 0.12f) else Color.Transparent)
+                                .clickable { onUpdateCurrency(Currency.KRW) },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                if (uiState.currency == Currency.KRW) {
+                                    Icon(
+                                        imageVector = Icons.Default.Check,
+                                        contentDescription = null,
+                                        tint = WorthourPrimary,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                                Text(
+                                    text = "KRW (₩)",
+                                    fontWeight = if (uiState.currency == Currency.KRW) FontWeight.Bold else FontWeight.Normal,
+                                    color = if (uiState.currency == Currency.KRW) WorthourPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(20.dp))
+                                .background(if (uiState.currency == Currency.USD) WorthourPrimary.copy(alpha = 0.12f) else Color.Transparent)
+                                .clickable { onUpdateCurrency(Currency.USD) },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                if (uiState.currency == Currency.USD) {
+                                    Icon(
+                                        imageVector = Icons.Default.Check,
+                                        contentDescription = null,
+                                        tint = WorthourPrimary,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                                Text(
+                                    text = "USD ($)",
+                                    fontWeight = if (uiState.currency == Currency.USD) FontWeight.Bold else FontWeight.Normal,
+                                    color = if (uiState.currency == Currency.USD) WorthourPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
+                }
             }
 
             // 4. Billing Cycle Toggle
@@ -1071,6 +1158,7 @@ fun AddSubscriptionPreview() {
             onSelectCustom = {},
             onUpdateServiceName = {},
             onUpdatePrice = {},
+            onUpdateCurrency = {},
             onUpdateCycle = {},
             onUpdateNextPaymentDate = {},
             onToggleFreeTrial = {},

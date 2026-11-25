@@ -1,6 +1,7 @@
 package com.worthour.ui.add
 
 import com.worthour.data.AnalysisType
+import com.worthour.data.Currency
 import com.worthour.data.PaymentCycle
 import com.worthour.data.SubscriptionEntity
 import java.time.LocalDate
@@ -17,6 +18,7 @@ data class AddSubscriptionUiState(
     val selectedPresetId: String? = null,
     val serviceName: String = "",
     val priceText: String = "",
+    val currency: Currency = Currency.KRW,
     val cycle: PaymentCycle = PaymentCycle.MONTHLY,
     val nextPaymentDate: LocalDate = LocalDate.now().plusMonths(1),
     val hasFreeTrial: Boolean = false,

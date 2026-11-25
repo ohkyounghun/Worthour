@@ -12,6 +12,7 @@ object SubscriptionJsonConverter {
     private const val KEY_FREE_TRIAL_END_DATE = "freeTrialEndDate"
     private const val KEY_CYCLE = "cycle"
     private const val KEY_ANALYSIS_TYPE = "analysisType"
+    private const val KEY_CURRENCY = "currency"
     private const val KEY_LINKED_APPS = "linkedAppPackageNames"
 
     /**
@@ -63,6 +64,7 @@ object SubscriptionJsonConverter {
             put(KEY_FREE_TRIAL_END_DATE, sub.freeTrialEndDate?.toString() ?: JSONObject.NULL)
             put(KEY_CYCLE, sub.cycle.name)
             put(KEY_ANALYSIS_TYPE, sub.analysisType.name)
+            put(KEY_CURRENCY, sub.currency.name)
 
             val appsArray = JSONArray()
             sub.linkedAppPackageNames.forEach { appsArray.put(it) }
@@ -86,6 +88,9 @@ object SubscriptionJsonConverter {
         val cycle = PaymentCycle.valueOf(jsonObject.getString(KEY_CYCLE))
         val analysisType = AnalysisType.valueOf(jsonObject.getString(KEY_ANALYSIS_TYPE))
 
+        val currencyStr = if (jsonObject.has(KEY_CURRENCY)) jsonObject.getString(KEY_CURRENCY) else "KRW"
+        val currency = try { Currency.valueOf(currencyStr) } catch (_: Exception) { Currency.KRW }
+
         val linkedApps = mutableListOf<String>()
         if (jsonObject.has(KEY_LINKED_APPS)) {
             val appsArray = jsonObject.getJSONArray(KEY_LINKED_APPS)
@@ -101,6 +106,7 @@ object SubscriptionJsonConverter {
             freeTrialEndDate = freeTrialEndDate,
             cycle = cycle,
             analysisType = analysisType,
+            currency = currency,
             linkedAppPackageNames = linkedApps
         )
     }

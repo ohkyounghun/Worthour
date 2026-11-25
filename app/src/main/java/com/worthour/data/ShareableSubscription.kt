@@ -9,6 +9,7 @@ data class ShareableSubscription(
     val freeTrialEndDate: LocalDate? = null,
     val cycle: PaymentCycle,
     val analysisType: AnalysisType,
+    val currency: Currency = Currency.KRW,
     val linkedAppPackageNames: List<String> = emptyList()
 ) {
     fun toSubscriptionEntity(id: Long = 0): SubscriptionEntity {
@@ -19,7 +20,8 @@ data class ShareableSubscription(
             nextPaymentDate = nextPaymentDate,
             freeTrialEndDate = freeTrialEndDate,
             cycle = cycle,
-            analysisType = analysisType
+            analysisType = analysisType,
+            currency = currency
         )
     }
 
@@ -35,6 +37,7 @@ data class ShareableSubscription(
                 freeTrialEndDate = subscription.freeTrialEndDate,
                 cycle = subscription.cycle,
                 analysisType = subscription.analysisType,
+                currency = subscription.currency,
                 linkedAppPackageNames = linkedAppPackageNames
             )
         }

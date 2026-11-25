@@ -33,4 +33,14 @@ class Converters {
     fun analysisTypeToValue(type: AnalysisType?): String? {
         return type?.name
     }
+
+    @TypeConverter
+    fun fromCurrency(value: String?): Currency? {
+        return value?.let { enumValueOf<Currency>(it) }
+    }
+
+    @TypeConverter
+    fun currencyToValue(currency: Currency?): String? {
+        return currency?.name
+    }
 }

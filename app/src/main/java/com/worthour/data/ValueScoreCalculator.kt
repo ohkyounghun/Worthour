@@ -15,11 +15,13 @@ object ValueScoreCalculator {
      * @param subscription The subscription entity.
      * @param totalUsageTimeMillis Sum of usage time in milliseconds for all linked apps in the last 30 days.
      * @param recordedDaysCount Count of distinct recorded days in usage_records in the last 30 days.
+     * @param usdToKrwRate Exchange rate from USD to KRW. If null and subscription is USD, returns MEASURING.
      */
     fun calculate(
         subscription: SubscriptionEntity,
         totalUsageTimeMillis: Long,
-        recordedDaysCount: Int
+        recordedDaysCount: Int,
+        usdToKrwRate: Double? = null
     ): ValueCalculationResult {
         if (subscription.analysisType == AnalysisType.NON_TIME_TRACKING) {
             return ValueCalculationResult(
@@ -35,16 +37,19 @@ object ValueScoreCalculator {
             )
         }
 
-        // 무료체험 중인 구독도 체험 종료 후 실제로 납부할 요금 기준으로 가치를 보여주기 위해 정가 그대로 계산한다.
-        val monthlyPrice = if (subscription.cycle == PaymentCycle.YEARLY) {
-            subscription.price.toDouble() / 12.0
-        } else {
-            subscription.price.toDouble()
-        }
+        val monthlyPriceInKrw = CurrencyConverter.toMonthlyKrw(
+            price = subscription.price,
+            currency = subscription.currency,
+            cycle = subscription.cycle,
+            usdToKrwRate = usdToKrwRate
+        ) ?: return ValueCalculationResult(
+            costPerHour = null,
+            valueScore = ValueScore.MEASURING
+        )
 
         // 측정 일수(최대 30일)에 비례하여 월 요금을 안분 계산
         val clampedRecordedDays = minOf(recordedDaysCount, 30)
-        val proRatedPrice = monthlyPrice * (clampedRecordedDays.toDouble() / 30.0)
+        val proRatedPrice = monthlyPriceInKrw * (clampedRecordedDays.toDouble() / 30.0)
 
         val usageHours = totalUsageTimeMillis.toDouble() / (1000.0 * 60.0 * 60.0)
 

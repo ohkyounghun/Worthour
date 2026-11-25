@@ -80,4 +80,52 @@ class ValueScoreCalculatorTest {
         assertEquals(ValueScore.GOOD, result.valueScore)
         assertEquals(566.666, result.costPerHour!!, 0.01)
     }
+
+    @Test
+    fun `USD subscription converts cents price to KRW using exchange rate`() {
+        val usdSub = SubscriptionEntity(
+            id = 1L,
+            name = "ChatGPT Plus",
+            price = 2000, // $20.00
+            nextPaymentDate = LocalDate.now().plusDays(10),
+            freeTrialEndDate = null,
+            cycle = PaymentCycle.MONTHLY,
+            analysisType = AnalysisType.TIME_TRACKING,
+            currency = Currency.USD
+        )
+
+        val result = ValueScoreCalculator.calculate(
+            subscription = usdSub,
+            totalUsageTimeMillis = 30 * 3_600_000L,
+            recordedDaysCount = 30,
+            usdToKrwRate = 1350.0
+        )
+
+        assertEquals(ValueScore.GOOD, result.valueScore)
+        assertEquals(900.0, result.costPerHour!!, 0.001)
+    }
+
+    @Test
+    fun `USD subscription without exchange rate returns MEASURING`() {
+        val usdSub = SubscriptionEntity(
+            id = 1L,
+            name = "ChatGPT Plus",
+            price = 2000, // $20.00
+            nextPaymentDate = LocalDate.now().plusDays(10),
+            freeTrialEndDate = null,
+            cycle = PaymentCycle.MONTHLY,
+            analysisType = AnalysisType.TIME_TRACKING,
+            currency = Currency.USD
+        )
+
+        val result = ValueScoreCalculator.calculate(
+            subscription = usdSub,
+            totalUsageTimeMillis = 30 * 3_600_000L,
+            recordedDaysCount = 30,
+            usdToKrwRate = null
+        )
+
+        assertEquals(ValueScore.MEASURING, result.valueScore)
+        assertNull(result.costPerHour)
+    }
 }

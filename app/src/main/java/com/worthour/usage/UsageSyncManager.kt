@@ -6,6 +6,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.worthour.data.AppDatabase
+import com.worthour.data.ExchangeRateRepository
 import com.worthour.data.UsageRecordEntity
 import com.worthour.data.UsageRepository
 import kotlinx.coroutines.Dispatchers
@@ -35,10 +36,13 @@ object UsageSyncManager {
     }
 
     /**
-     * Syncs recent [days] (default 7 days) of usage data into usage_records DB via UsageRepository.
+     * Syncs recent [days] (default 7 days) of usage data into usage_records DB via UsageRepository
+     * and fetches the latest exchange rate.
      * Returns the total count of saved records.
      */
     suspend fun syncRecentDays(context: Context, days: Int = 7): Int {
+        ExchangeRateRepository(context).fetchUsdToKrwRate()
+
         val permissionChecker = UsagePermissionChecker(context)
         if (!permissionChecker.hasUsageStatsPermission()) {
             return 0

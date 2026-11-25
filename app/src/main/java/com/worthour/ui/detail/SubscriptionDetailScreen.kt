@@ -243,7 +243,7 @@ fun SubscriptionDetailContent(
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                                 Text(
-                                    text = String.format(Locale.US, "₩%,d", sub.price),
+                                    text = com.worthour.data.CurrencyConverter.formatPrice(sub.price, sub.currency),
                                     style = MaterialTheme.typography.titleLarge,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onSurface
@@ -340,11 +340,13 @@ fun SubscriptionDetailContent(
                                 sub.analysisType == AnalysisType.NON_TIME_TRACKING -> stringResource(id = R.string.detail_formula_not_tracked)
                                 valueScore == ValueScore.MEASURING -> stringResource(id = R.string.detail_formula_measuring)
                                 uiState.totalUsageTimeMillis30Days == 0L || cph == null || cph.isInfinite() || cph.isNaN() -> stringResource(id = R.string.detail_formula_no_usage)
-                                else -> stringResource(
-                                    id = R.string.detail_formula_format,
-                                    String.format(Locale.US, "%,d", sub.price),
-                                    formatUsageDuration(uiState.totalUsageTimeMillis30Days)
-                                )
+                                else -> {
+                                    stringResource(
+                                        id = R.string.detail_formula_format,
+                                        com.worthour.data.CurrencyConverter.formatPrice(sub.price, sub.currency),
+                                        formatUsageDuration(uiState.totalUsageTimeMillis30Days)
+                                    )
+                                }
                             }
 
                             Text(

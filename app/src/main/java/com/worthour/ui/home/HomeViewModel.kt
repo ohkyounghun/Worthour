@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.worthour.R
 import com.worthour.data.AppDatabase
+import com.worthour.data.ExchangeRateRepository
 import com.worthour.data.GetSubscriptionValueUseCase
 import com.worthour.data.PaymentCycle
 import com.worthour.data.SubscriptionEntity
@@ -48,6 +49,7 @@ data class UpcomingPaymentItem(
 
 data class HomeUiState(
     val totalMonthlySpending: Int = 0,
+    val totalMonthlySpendingText: String = "₩0",
     val activeSubscriptionsCount: Int = 0,
     val upcomingPayment: UpcomingPaymentItem? = null,
     val subscriptions: List<HomeSubscriptionItem> = emptyList(),
@@ -76,9 +78,10 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     init {
         val database = AppDatabase.getDatabase(application)
         val usageStatsReader = UsageStatsReader(application)
+        val exchangeRateRepo = ExchangeRateRepository(application)
         usageRepository = UsageRepository(database.usageRecordDao(), usageStatsReader)
         subscriptionRepository = SubscriptionRepository(database.subscriptionDao())
-        getSubscriptionValueUseCase = GetSubscriptionValueUseCase(subscriptionRepository, usageRepository)
+        getSubscriptionValueUseCase = GetSubscriptionValueUseCase(subscriptionRepository, usageRepository, exchangeRateRepo)
 
         loadTodayTopApps()
 
@@ -116,14 +119,38 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             trialEnd == null || !today.isBefore(trialEnd)
         }
 
-        val totalSpendingDouble = activeForSpending.sumOf { sub ->
-            if (sub.cycle == PaymentCycle.YEARLY) {
-                sub.price.toDouble() / 12.0
+        val exchangeRateRepo = ExchangeRateRepository(getApplication<Application>())
+        val rate = exchangeRateRepo.getSavedUsdToKrwRate()
+
+        var krwMonthlyDouble = 0.0
+        var usdMonthlyDouble = 0.0
+
+        for (sub in activeForSpending) {
+            if (sub.currency == com.worthour.data.Currency.USD) {
+                val monthlyUsd = if (sub.cycle == PaymentCycle.YEARLY) sub.price / 100.0 / 12.0 else sub.price / 100.0
+                if (rate != null) {
+                    krwMonthlyDouble += monthlyUsd * rate
+                } else {
+                    usdMonthlyDouble += monthlyUsd
+                }
             } else {
-                sub.price.toDouble()
+                val monthlyKrw = if (sub.cycle == PaymentCycle.YEARLY) sub.price.toDouble() / 12.0 else sub.price.toDouble()
+                krwMonthlyDouble += monthlyKrw
             }
         }
-        val totalSpending = round(totalSpendingDouble).toInt()
+
+        val totalSpending = round(krwMonthlyDouble).toInt()
+        val spendingText = when {
+            rate != null || usdMonthlyDouble == 0.0 -> {
+                String.format(java.util.Locale.US, "₩%,d", totalSpending)
+            }
+            krwMonthlyDouble > 0.0 -> {
+                String.format(java.util.Locale.US, "₩%,d + $%.2f", totalSpending, usdMonthlyDouble)
+            }
+            else -> {
+                String.format(java.util.Locale.US, "$%.2f", usdMonthlyDouble)
+            }
+        }
         val activeCount = subs.size
 
         // 2. Upcoming Payment (today or future), sorted by nextPaymentDate ascending
@@ -146,6 +173,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
         HomeUiState(
             totalMonthlySpending = totalSpending,
+            totalMonthlySpendingText = spendingText,
             activeSubscriptionsCount = activeCount,
             upcomingPayment = upcoming,
             subscriptions = sortedHomeItems,
@@ -177,7 +205,14 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     fun runManualSync() {
         viewModelScope.launch(Dispatchers.IO) {
             val count = com.worthour.usage.UsageSyncManager.syncNow(getApplication())
-            _syncStatus.value = getApplication<Application>().getString(R.string.home_sync_result_message, count)
+            val exchangeRateRepo = ExchangeRateRepository(getApplication<Application>())
+            val rate = exchangeRateRepo.getSavedUsdToKrwRate()
+            val message = if (rate != null) {
+                getApplication<Application>().getString(R.string.home_sync_result_message_with_rate, count, rate.toString())
+            } else {
+                getApplication<Application>().getString(R.string.home_sync_result_message, count)
+            }
+            _syncStatus.value = message
         }
     }
 }

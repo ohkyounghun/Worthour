@@ -175,7 +175,7 @@ fun HomeScreenContent(
             // 1. Monthly Spending Hero Card
             item {
                 MonthlySpendingCard(
-                    totalSpending = uiState.totalMonthlySpending,
+                    totalSpendingText = uiState.totalMonthlySpendingText,
                     activeCount = uiState.activeSubscriptionsCount,
                     currentMonthYear = currentMonthYear
                 )
@@ -341,7 +341,7 @@ fun HomeTopAppBar(
 
 @Composable
 fun MonthlySpendingCard(
-    totalSpending: Int,
+    totalSpendingText: String,
     activeCount: Int,
     currentMonthYear: String,
     modifier: Modifier = Modifier
@@ -382,7 +382,7 @@ fun MonthlySpendingCard(
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = formatPrice(totalSpending),
+                text = totalSpendingText,
                 style = MaterialTheme.typography.headlineLarge.copy(
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold
@@ -456,7 +456,7 @@ fun UpcomingPaymentCard(
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = "${upcomingItem.subscription.name} · ${formatPrice(upcomingItem.subscription.price)}",
+                    text = "${upcomingItem.subscription.name} · ${formatPrice(upcomingItem.subscription.price, upcomingItem.subscription.currency)}",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
@@ -523,16 +523,8 @@ fun SubscriptionItemCard(
             }
 
             Column(horizontalAlignment = Alignment.End) {
-                val priceResource = if (item.entity.cycle == PaymentCycle.YEARLY) {
-                    R.string.home_per_year
-                } else {
-                    R.string.home_per_month
-                }
                 Text(
-                    text = stringResource(
-                        id = priceResource,
-                        String.format(Locale.US, "%,d", item.entity.price)
-                    ),
+                    text = formatSubscriptionPrice(item.entity.price, item.entity.currency, item.entity.cycle),
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
@@ -716,8 +708,12 @@ fun WorthourBottomNavigationBar(
     }
 }
 
-private fun formatPrice(price: Int): String {
-    return String.format(Locale.US, "₩%,d", price)
+private fun formatPrice(price: Int, currency: com.worthour.data.Currency = com.worthour.data.Currency.KRW): String {
+    return com.worthour.data.CurrencyConverter.formatPrice(price, currency)
+}
+
+private fun formatSubscriptionPrice(price: Int, currency: com.worthour.data.Currency, cycle: PaymentCycle): String {
+    return com.worthour.data.CurrencyConverter.formatPriceWithCycle(price, currency, cycle)
 }
 
 private fun formatDate(date: LocalDate): String {
