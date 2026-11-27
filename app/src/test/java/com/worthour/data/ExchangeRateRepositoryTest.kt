@@ -2,6 +2,7 @@ package com.worthour.data
 
 import android.content.SharedPreferences
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -132,5 +133,25 @@ class ExchangeRateRepositoryTest {
 
         assertNull(repository.getSavedUsdToKrwRate())
         assertNull(repository.getSavedDate())
+    }
+
+    @Test
+    fun getSavedUsdToKrwRateFlow_emitsUpdatedRateWhenSaved() = runBlocking {
+        val fakeResponse = FrankfurterResponse(
+            date = "2026-11-25",
+            base = "USD",
+            quote = "KRW",
+            rate = 1350.0
+        )
+        val service = FakeFrankfurterService(response = fakeResponse)
+        val repository = ExchangeRateRepository(fakeSharedPreferences, service)
+
+        val initialValue = repository.getSavedUsdToKrwRateFlow().first()
+        assertNull(initialValue)
+
+        repository.fetchUsdToKrwRate()
+
+        val updatedValue = repository.getSavedUsdToKrwRateFlow().first()
+        assertEquals(1350.0, updatedValue!!, 0.001)
     }
 }

@@ -2,6 +2,7 @@ package com.worthour.ui.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -63,6 +64,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.worthour.R
 import com.worthour.data.AnalysisType
+import com.worthour.data.Currency
 import com.worthour.data.PaymentCycle
 import com.worthour.data.SubscriptionEntity
 import com.worthour.ui.navigation.Screen
@@ -106,6 +108,7 @@ fun HomeScreen(
         uiState = uiState,
         syncStatus = syncStatus,
         onRunManualSync = { viewModel.runManualSync() },
+        onToggleCurrency = { viewModel.onToggleDisplayCurrency(it) },
         onNavigateToAdd = onNavigateToAdd,
         onNavigateToDetail = onNavigateToDetail,
         onNavigateToInsights = onNavigateToInsights,
@@ -121,6 +124,7 @@ fun HomeScreenContent(
     uiState: HomeUiState,
     syncStatus: String?,
     onRunManualSync: () -> Unit,
+    onToggleCurrency: (Currency) -> Unit,
     onNavigateToAdd: () -> Unit,
     onNavigateToDetail: (Long) -> Unit,
     onNavigateToInsights: () -> Unit,
@@ -176,6 +180,9 @@ fun HomeScreenContent(
             item {
                 MonthlySpendingCard(
                     totalSpendingText = uiState.totalMonthlySpendingText,
+                    selectedCurrency = uiState.selectedDisplayCurrency,
+                    isToggleEnabled = uiState.isCurrencyToggleEnabled,
+                    onToggleCurrency = onToggleCurrency,
                     activeCount = uiState.activeSubscriptionsCount,
                     currentMonthYear = currentMonthYear
                 )
@@ -342,6 +349,9 @@ fun HomeTopAppBar(
 @Composable
 fun MonthlySpendingCard(
     totalSpendingText: String,
+    selectedCurrency: Currency,
+    isToggleEnabled: Boolean,
+    onToggleCurrency: (Currency) -> Unit,
     activeCount: Int,
     currentMonthYear: String,
     modifier: Modifier = Modifier
@@ -365,18 +375,60 @@ fun MonthlySpendingCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = stringResource(id = R.string.home_monthly_spending),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = Color.White.copy(alpha = 0.85f),
-                    fontWeight = FontWeight.Medium
-                )
-                Text(
-                    text = currentMonthYear,
-                    style = MaterialTheme.typography.labelMedium,
-                    color = Color.White.copy(alpha = 0.75f),
-                    fontWeight = FontWeight.SemiBold
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.home_monthly_spending),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = Color.White.copy(alpha = 0.85f),
+                        fontWeight = FontWeight.Medium
+                    )
+                    Text(
+                        text = currentMonthYear,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = Color.White.copy(alpha = 0.75f),
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+
+                // Currency Toggle (KRW / USD)
+                Row(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color.White.copy(alpha = if (isToggleEnabled) 0.2f else 0.1f))
+                        .padding(2.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(if (selectedCurrency == Currency.KRW) Color.White else Color.Transparent)
+                            .clickable(enabled = isToggleEnabled) { onToggleCurrency(Currency.KRW) }
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = "KRW",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = if (selectedCurrency == Currency.KRW) WorthourPrimary else Color.White.copy(alpha = if (isToggleEnabled) 0.8f else 0.4f)
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(if (selectedCurrency == Currency.USD && isToggleEnabled) Color.White else Color.Transparent)
+                            .clickable(enabled = isToggleEnabled) { onToggleCurrency(Currency.USD) }
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = "USD",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = if (selectedCurrency == Currency.USD && isToggleEnabled) WorthourPrimary else Color.White.copy(alpha = if (isToggleEnabled) 0.8f else 0.4f)
+                        )
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -812,6 +864,7 @@ fun HomeScreenPreviewAllBadges() {
             uiState = sampleUiState,
             syncStatus = null,
             onRunManualSync = {},
+            onToggleCurrency = {},
             onNavigateToAdd = {},
             onNavigateToDetail = {},
             onNavigateToInsights = {},

@@ -4,6 +4,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 
 class ExchangeRateRepository(
     private val sharedPreferences: SharedPreferences,
@@ -31,6 +34,20 @@ class ExchangeRateRepository(
     fun getSavedUsdToKrwRate(): Double? {
         val rateStr = sharedPreferences.getString(KEY_RATE, null) ?: return null
         return rateStr.toDoubleOrNull()
+    }
+
+    fun getSavedUsdToKrwRateFlow(): Flow<Double?> = callbackFlow {
+        val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+            if (key == KEY_RATE || key == null) {
+                trySend(getSavedUsdToKrwRate())
+            }
+        }
+        sharedPreferences.registerOnSharedPreferenceChangeListener(listener)
+        trySend(getSavedUsdToKrwRate())
+
+        awaitClose {
+            sharedPreferences.unregisterOnSharedPreferenceChangeListener(listener)
+        }
     }
 
     fun getSavedDate(): String? {

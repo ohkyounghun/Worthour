@@ -1,15 +1,19 @@
 package com.worthour.ui.home
 
 import android.app.Application
+import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.worthour.R
 import com.worthour.data.AppDatabase
+import com.worthour.data.Currency
+import com.worthour.data.CurrencyConverter
 import com.worthour.data.ExchangeRateRepository
 import com.worthour.data.GetSubscriptionValueUseCase
 import com.worthour.data.PaymentCycle
 import com.worthour.data.SubscriptionEntity
 import com.worthour.data.SubscriptionRepository
+import com.worthour.data.SubscriptionValueItem
 import com.worthour.data.UsageRepository
 import com.worthour.usage.UsageStatsReader
 import kotlinx.coroutines.Dispatchers
@@ -24,6 +28,22 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import kotlin.math.round
+
+object HomePrefs {
+    private const val PREFS_NAME = "worthour_home_prefs"
+    private const val KEY_DISPLAY_CURRENCY = "spending_display_currency"
+
+    fun getDisplayCurrency(context: Context): Currency {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val name = prefs.getString(KEY_DISPLAY_CURRENCY, Currency.KRW.name)
+        return try { Currency.valueOf(name!!) } catch (_: Exception) { Currency.KRW }
+    }
+
+    fun setDisplayCurrency(context: Context, currency: Currency) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit().putString(KEY_DISPLAY_CURRENCY, currency.name).apply()
+    }
+}
 
 data class TopAppUsage(
     val packageName: String,
@@ -50,6 +70,8 @@ data class UpcomingPaymentItem(
 data class HomeUiState(
     val totalMonthlySpending: Int = 0,
     val totalMonthlySpendingText: String = "₩0",
+    val selectedDisplayCurrency: Currency = Currency.KRW,
+    val isCurrencyToggleEnabled: Boolean = false,
     val activeSubscriptionsCount: Int = 0,
     val upcomingPayment: UpcomingPaymentItem? = null,
     val subscriptions: List<HomeSubscriptionItem> = emptyList(),
@@ -58,11 +80,21 @@ data class HomeUiState(
     val isLoading: Boolean = false
 )
 
+private data class HomeDataTuple(
+    val subValueItems: List<SubscriptionValueItem>,
+    val permWarning: Boolean,
+    val apps: List<TopAppUsage>,
+    val today: LocalDate
+)
+
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     private val usageRepository: UsageRepository
     private val subscriptionRepository: SubscriptionRepository
     private val getSubscriptionValueUseCase: GetSubscriptionValueUseCase
+
+    private val _displayCurrency = MutableStateFlow(HomePrefs.getDisplayCurrency(application))
+    val displayCurrency: StateFlow<Currency> = _displayCurrency.asStateFlow()
 
     private val _topApps = MutableStateFlow<List<TopAppUsage>>(emptyList())
     val topApps: StateFlow<List<TopAppUsage>> = _topApps.asStateFlow()
@@ -104,12 +136,26 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun onToggleDisplayCurrency(currency: Currency) {
+        val rate = ExchangeRateRepository(getApplication<Application>()).getSavedUsdToKrwRate()
+        if (rate == null) return
+        _displayCurrency.value = currency
+        HomePrefs.setDisplayCurrency(getApplication(), currency)
+    }
+
     val uiState: StateFlow<HomeUiState> = combine(
-        getSubscriptionValueUseCase.getAllSubscriptionValuesFlow(_currentDate),
-        _permissionWarning,
-        _topApps,
-        _currentDate
-    ) { subValueItems, permWarning, apps, today ->
+        combine(
+            getSubscriptionValueUseCase.getAllSubscriptionValuesFlow(_currentDate),
+            _permissionWarning,
+            _topApps,
+            _currentDate
+        ) { subValueItems, permWarning, apps, today ->
+            HomeDataTuple(subValueItems, permWarning, apps, today)
+        },
+        _displayCurrency,
+        ExchangeRateRepository(getApplication<Application>()).getSavedUsdToKrwRateFlow()
+    ) { dataTuple, selectedCurrency, rate ->
+        val (subValueItems, permWarning, apps, today) = dataTuple
         val subs = subValueItems.map { it.subscription }
 
         // 1. Monthly Equivalent Total calculation
@@ -119,38 +165,64 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             trialEnd == null || !today.isBefore(trialEnd)
         }
 
-        val exchangeRateRepo = ExchangeRateRepository(getApplication<Application>())
-        val rate = exchangeRateRepo.getSavedUsdToKrwRate()
+        val isToggleEnabled = (rate != null)
+        val activeCurrency = if (isToggleEnabled) selectedCurrency else Currency.KRW
 
-        var krwMonthlyDouble = 0.0
-        var usdMonthlyDouble = 0.0
-
-        for (sub in activeForSpending) {
-            if (sub.currency == com.worthour.data.Currency.USD) {
-                val monthlyUsd = if (sub.cycle == PaymentCycle.YEARLY) sub.price / 100.0 / 12.0 else sub.price / 100.0
-                if (rate != null) {
-                    krwMonthlyDouble += monthlyUsd * rate
-                } else {
-                    usdMonthlyDouble += monthlyUsd
+        val spendingText = if (isToggleEnabled && rate != null) {
+            if (activeCurrency == Currency.KRW) {
+                val krwTotal = activeForSpending.sumOf { sub ->
+                    CurrencyConverter.toMonthlyPrice(
+                        price = sub.price,
+                        fromCurrency = sub.currency,
+                        targetCurrency = Currency.KRW,
+                        cycle = sub.cycle,
+                        usdToKrwRate = rate
+                    ) ?: 0.0
                 }
+                String.format(java.util.Locale.US, "₩%,d", round(krwTotal).toInt())
             } else {
-                val monthlyKrw = if (sub.cycle == PaymentCycle.YEARLY) sub.price.toDouble() / 12.0 else sub.price.toDouble()
-                krwMonthlyDouble += monthlyKrw
+                val usdTotal = activeForSpending.sumOf { sub ->
+                    CurrencyConverter.toMonthlyPrice(
+                        price = sub.price,
+                        fromCurrency = sub.currency,
+                        targetCurrency = Currency.USD,
+                        cycle = sub.cycle,
+                        usdToKrwRate = rate
+                    ) ?: 0.0
+                }
+                String.format(java.util.Locale.US, "$%.2f", usdTotal)
+            }
+        } else {
+            var krwTotal = 0.0
+            var usdTotal = 0.0
+            for (sub in activeForSpending) {
+                if (sub.currency == Currency.USD) {
+                    val monthlyUsd = CurrencyConverter.toMonthlyPrice(
+                        price = sub.price,
+                        fromCurrency = Currency.USD,
+                        targetCurrency = Currency.USD,
+                        cycle = sub.cycle,
+                        usdToKrwRate = null
+                    ) ?: 0.0
+                    usdTotal += monthlyUsd
+                } else {
+                    val monthlyKrw = CurrencyConverter.toMonthlyPrice(
+                        price = sub.price,
+                        fromCurrency = Currency.KRW,
+                        targetCurrency = Currency.KRW,
+                        cycle = sub.cycle,
+                        usdToKrwRate = null
+                    ) ?: 0.0
+                    krwTotal += monthlyKrw
+                }
+            }
+            when {
+                usdTotal > 0.0 && krwTotal > 0.0 -> String.format(java.util.Locale.US, "₩%,d + $%.2f", round(krwTotal).toInt(), usdTotal)
+                usdTotal > 0.0 -> String.format(java.util.Locale.US, "$%.2f", usdTotal)
+                else -> String.format(java.util.Locale.US, "₩%,d", round(krwTotal).toInt())
             }
         }
 
-        val totalSpending = round(krwMonthlyDouble).toInt()
-        val spendingText = when {
-            rate != null || usdMonthlyDouble == 0.0 -> {
-                String.format(java.util.Locale.US, "₩%,d", totalSpending)
-            }
-            krwMonthlyDouble > 0.0 -> {
-                String.format(java.util.Locale.US, "₩%,d + $%.2f", totalSpending, usdMonthlyDouble)
-            }
-            else -> {
-                String.format(java.util.Locale.US, "$%.2f", usdMonthlyDouble)
-            }
-        }
         val activeCount = subs.size
 
         // 2. Upcoming Payment (today or future), sorted by nextPaymentDate ascending
@@ -172,8 +244,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             }
 
         HomeUiState(
-            totalMonthlySpending = totalSpending,
             totalMonthlySpendingText = spendingText,
+            selectedDisplayCurrency = activeCurrency,
+            isCurrencyToggleEnabled = isToggleEnabled,
             activeSubscriptionsCount = activeCount,
             upcomingPayment = upcoming,
             subscriptions = sortedHomeItems,
@@ -181,6 +254,10 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             topApps = apps
         )
     }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = HomeUiState(isLoading = true)
+    ).stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = HomeUiState(isLoading = true)
