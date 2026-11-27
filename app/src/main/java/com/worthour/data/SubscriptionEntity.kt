@@ -13,5 +13,6 @@ data class SubscriptionEntity(
     val nextPaymentDate: LocalDate,
     val freeTrialEndDate: LocalDate?,
     val cycle: PaymentCycle,
-    val analysisType: AnalysisType
+    val analysisType: AnalysisType,
+    val currency: Currency = Currency.KRW
 )

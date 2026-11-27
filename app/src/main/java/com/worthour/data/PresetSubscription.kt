@@ -4,6 +4,7 @@ data class PresetSubscription(
     val id: String,
     val name: String,
     val defaultPrice: Int,
+    val currency: Currency = Currency.KRW,
     val cycle: PaymentCycle = PaymentCycle.MONTHLY,
     val analysisType: AnalysisType = AnalysisType.TIME_TRACKING,
     val candidatePackages: List<String>

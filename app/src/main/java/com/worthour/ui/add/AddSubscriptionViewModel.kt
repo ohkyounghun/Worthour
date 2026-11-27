@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.worthour.R
 import com.worthour.data.AnalysisType
 import com.worthour.data.AppDatabase
+import com.worthour.data.Currency
 import com.worthour.data.PaymentCycle
 import com.worthour.data.PresetSubscription
 import com.worthour.data.SubscriptionEntity
@@ -49,11 +50,18 @@ class AddSubscriptionViewModel(application: Application) : AndroidViewModel(appl
                 val linkedPkgs = linkedApps.map { it.packageName }
                 val hasTrial = sub.freeTrialEndDate != null
 
+                val formattedPrice = if (sub.currency == Currency.USD) {
+                    String.format(Locale.US, "%.2f", sub.price / 100.0)
+                } else {
+                    sub.price.toString()
+                }
+
                 _uiState.update { state ->
                     state.copy(
                         isLoading = false,
                         serviceName = sub.name,
-                        priceText = sub.price.toString(),
+                        priceText = formattedPrice,
+                        currency = sub.currency,
                         cycle = sub.cycle,
                         nextPaymentDate = sub.nextPaymentDate,
                         hasFreeTrial = hasTrial,
@@ -73,11 +81,18 @@ class AddSubscriptionViewModel(application: Application) : AndroidViewModel(appl
         // Only auto-link candidate packages that are actually installed on the device
         val autoLinked = preset.candidatePackages.filter { installedPkgs.contains(it) }
 
+        val formattedPrice = if (preset.currency == Currency.USD) {
+            String.format(Locale.US, "%.2f", preset.defaultPrice / 100.0)
+        } else {
+            preset.defaultPrice.toString()
+        }
+
         _uiState.update { state ->
             state.copy(
                 selectedPresetId = preset.id,
                 serviceName = preset.name,
-                priceText = preset.defaultPrice.toString(),
+                priceText = formattedPrice,
+                currency = preset.currency,
                 cycle = preset.cycle,
                 analysisType = preset.analysisType,
                 linkedPackages = autoLinked,
@@ -104,9 +119,38 @@ class AddSubscriptionViewModel(application: Application) : AndroidViewModel(appl
     }
 
     fun updatePrice(priceStr: String) {
-        val cleanDigits = priceStr.filter { it.isDigit() }
-        val trimmed = if (cleanDigits.length > 9) cleanDigits.take(9) else cleanDigits
-        _uiState.update { it.copy(priceText = trimmed, priceError = null) }
+        val isUsd = _uiState.value.currency == Currency.USD
+        val filtered = if (isUsd) {
+            var hasDot = false
+            val sb = StringBuilder()
+            var decimalDigits = 0
+            for (ch in priceStr) {
+                if (ch.isDigit()) {
+                    if (hasDot) {
+                        if (decimalDigits < 2) {
+                            sb.append(ch)
+                            decimalDigits++
+                        }
+                    } else {
+                        if (sb.length < 7) {
+                            sb.append(ch)
+                        }
+                    }
+                } else if (ch == '.' && !hasDot) {
+                    hasDot = true
+                    sb.append(ch)
+                }
+            }
+            sb.toString()
+        } else {
+            val cleanDigits = priceStr.filter { it.isDigit() }
+            if (cleanDigits.length > 9) cleanDigits.take(9) else cleanDigits
+        }
+        _uiState.update { it.copy(priceText = filtered, priceError = null) }
+    }
+
+    fun updateCurrency(currency: Currency) {
+        _uiState.update { it.copy(currency = currency) }
     }
 
     fun updateCycle(cycle: PaymentCycle) {
@@ -192,7 +236,15 @@ class AddSubscriptionViewModel(application: Application) : AndroidViewModel(appl
     fun saveSubscription() {
         val state = _uiState.value
         val nameTrimmed = state.serviceName.trim()
-        val priceInt = state.priceText.toIntOrNull()
+        val isUsd = state.currency == Currency.USD
+        val priceInt = if (isUsd) {
+            val dollars = state.priceText.toDoubleOrNull()
+            if (dollars != null) {
+                kotlin.math.round(dollars * 100.0).toInt()
+            } else null
+        } else {
+            state.priceText.toIntOrNull()
+        }
 
         val errors = mutableListOf<String>()
         var nameErr: String? = null
@@ -208,7 +260,10 @@ class AddSubscriptionViewModel(application: Application) : AndroidViewModel(appl
         if (priceInt == null) {
             priceErr = context.getString(R.string.error_price_invalid)
             errors.add(priceErr)
-        } else if (priceInt < 1 || priceInt > 100_000_000) {
+        } else if (isUsd && (priceInt < 1 || priceInt > 100_000_00)) {
+            priceErr = context.getString(R.string.error_price_out_of_range)
+            errors.add(priceErr)
+        } else if (!isUsd && (priceInt < 1 || priceInt > 100_000_000)) {
             priceErr = context.getString(R.string.error_price_out_of_range)
             errors.add(priceErr)
         }
@@ -242,7 +297,8 @@ class AddSubscriptionViewModel(application: Application) : AndroidViewModel(appl
             nextPaymentDate = if (state.hasFreeTrial && state.freeTrialEndDate != null) state.freeTrialEndDate else state.nextPaymentDate,
             freeTrialEndDate = if (state.hasFreeTrial) state.freeTrialEndDate else null,
             cycle = state.cycle,
-            analysisType = state.analysisType
+            analysisType = state.analysisType,
+            currency = state.currency
         )
 
         viewModelScope.launch(Dispatchers.IO) {
